@@ -1,3 +1,7 @@
+> [!WARNING]
+> **Work in progress — not ready for everyday use.**
+> Shelf is still being built and tested. Things may break or change between versions. Please don't install it yet unless you're helping test it.
+
 # Shelf — a tvOS-inspired launcher for Android TV
 
 Bring the look of the Apple TV home screen to your Android TV: the focused app's artwork fills the screen, its name sits big in the corner, and your apps live in a frosted-glass dock along the bottom, just like tvOS.
