@@ -34,7 +34,16 @@ jobs:
             echo "::warning::No signing secret set. Using a temporary key, so updates will need an uninstall first."
           fi
           chmod +x gradlew
-          ./gradlew assembleRelease --no-daemon
+          set +e
+          ./gradlew assembleRelease --no-daemon 2>&1 | tee build.log
+          status=${PIPESTATUS[0]}
+          set -e
+          if [ "$status" -ne 0 ]; then
+            # Show the compiler errors as annotations on the run page.
+            { grep -E "^e: " build.log; grep -A20 "What went wrong" build.log; } | head -80 > errors.txt
+            echo "::error title=Build failed::$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' errors.txt)"
+            exit 1
+          fi
           cp app/build/outputs/apk/release/app-release.apk ShelfLauncher.apk
 
       # Runs the launcher on an Android TV 10 emulator before publishing.
