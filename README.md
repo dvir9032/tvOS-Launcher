@@ -1,6 +1,6 @@
-# Shelf — a glass-dock launcher for Android TV
+# Shelf — a tvOS-inspired launcher for Android TV
 
-A clean home screen for Android TV: the focused app's artwork fills the screen, its name sits big in the corner, and your apps live in a frosted-glass dock along the bottom.
+Bring the look of the Apple TV home screen to your Android TV: the focused app's artwork fills the screen, its name sits big in the corner, and your apps live in a frosted-glass dock along the bottom, just like tvOS.
 
 ![Home screen](docs/screenshots/home.png)
 
@@ -94,6 +94,6 @@ Open the project in [Android Studio](https://developer.android.com/studio) and r
 ## Notes
 
 - Live background blur needs Android 12. On older TVs the backdrop is the app's banner scaled down and stretched, which gives a soft blur at almost no cost.
-- Shelf is an independent project, inspired by the look of modern TV home screens. It is not affiliated with Apple or Google.
+- Shelf is an independent project inspired by the design of tvOS. It is not affiliated with, endorsed by, or connected to Apple or Google. tvOS and Apple TV are trademarks of Apple Inc.
 
 [עברית](README.he.md)
