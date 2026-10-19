@@ -1,78 +1,98 @@
 > [!WARNING]
-> **Work in progress — not ready for everyday use.**
-> Shelf is still being built and tested. Things may break or change between versions. Please don't install it yet unless you're helping test it.
+> **Early preview.** Shelf is still in active development and testing. Things may change between versions. Feel free to try it, and expect the occasional rough edge.
 
-# Shelf — a tvOS-inspired launcher for Android TV
+<h1 align="center">Shelf</h1>
 
-Bring the look of the Apple TV home screen to your Android TV: the focused app's artwork fills the screen, its name sits big in the corner, and your apps live in a frosted-glass dock along the bottom, just like tvOS.
+<p align="center">
+  <b>The Apple TV look, on your Android TV.</b><br>
+  A tvOS-inspired home screen with a frosted-glass dock, full-screen artwork and zero clutter.
+</p>
 
-![Home screen](docs/screenshots/home.png)
+<p align="center">
+  <a href="#install-in-under-a-minute"><b>Install</b></a> ·
+  <a href="#features">Features</a> ·
+  <a href="#make-the-home-button-open-shelf">Home button setup</a> ·
+  <a href="#faq">FAQ</a>
+</p>
 
-![Moving focus changes the backdrop](docs/screenshots/focus.png)
+![Shelf home screen](docs/screenshots/home.png)
 
-*Screenshots from an Android TV 10 emulator. On your TV the dock shows your own apps.*
+---
+
+## Your TV, without the noise
+
+Most Android TV home screens are crowded with ads, rows of suggestions and things you never asked for. Shelf strips all that away.
+
+Just your apps, sitting on a glass dock. Move between them and the whole screen comes alive with the colors of the app you're on. Clean, calm, and instantly familiar if you've ever used an Apple TV.
+
+![The backdrop follows your focus](docs/screenshots/focus.png)
 
 ## Features
 
-- Full-screen backdrop that takes the colors of the focused app and fades as you move
-- Glass dock with your installed apps, using each app's official TV banner
-- Focused tile lifts and catches a glare
-- Clock in the top corner
-- Home button jumps back to the first app; Back scrolls to the top
-- Long-press OK (or the Menu button) on an app to open, move or hide it
-- HDMI inputs row under the dock
-- Settings: apps per row, 12/24-hour clock, glass strength, backdrop style, hidden apps
-- Updates itself: an "update available" pill appears when a new version is out
-- Picks up apps you install or remove automatically
-- Works on Android TV 8.0 and newer, no account or internet needed
+**🪟 Frosted-glass dock**
+Your apps on a translucent shelf at the bottom of the screen, using each app's official TV artwork.
 
-## Install
+**🎨 A screen that follows you**
+The background takes on the colors of whichever app you're on and fades smoothly as you move. The focused tile lifts, grows and catches the light.
 
-### Fastest: Downloader code
+**✋ Arrange it your way**
+Hold OK on any app to open, move or hide it. Your layout is remembered.
+
+| Long-press menu | Moving an app |
+|---|---|
+| ![Long-press menu](docs/screenshots/menu.png) | ![Moving an app](docs/screenshots/move.png) |
+
+**📺 HDMI inputs, one click away**
+Your game console, cable box or soundbar sits in a row right under the dock, with the names you gave them.
+
+**⚙️ Make it yours**
+Choose how many apps per row, a 12 or 24-hour clock, how strong the glass looks, and the backdrop style: blurred, sharp or plain color.
+
+![Settings](docs/screenshots/settings.png)
+
+**🔄 Updates itself**
+When a new version is out, an *Update available* button appears in the corner. One click and you're on the latest.
+
+**🪶 Light and private**
+No account, no ads, no tracking, no internet needed (except for checking updates). Works on Android TV 8.0 and newer, and stays smooth on older TVs.
+
+## Install in under a minute
+
+### With Downloader (easiest)
 
 1. On your TV, install **Downloader** from the Google Play Store.
-2. Open Downloader and enter the code:
+2. Open it and enter the code
 
-   ## `8100721`
+   <h3><code>8100721</code></h3>
 
-3. Allow Downloader to install unknown apps when asked
-   (or: Settings → Device Preferences → Security & restrictions → Unknown sources → Downloader).
-4. Tap **Install**.
+3. Allow Downloader to install apps when asked.
+4. Hit **Install**. Done.
 
-### Direct link
+### Other ways
 
-Open this link in Downloader, or in any browser on the TV:
+- **Direct link** (in Downloader or any TV browser):
+  `https://github.com/dvir9032/tvOS-Launcher/releases/latest/download/ShelfLauncher.apk`
+- **From the [Releases](../../releases/latest) page**
+- **With ADB:** `adb install -r ShelfLauncher.apk`
 
-```
-https://github.com/dvir9032/tvOS-Launcher/releases/latest/download/ShelfLauncher.apk
-```
+## Make the Home button open Shelf
 
-It always points to the newest version. You can also grab the APK from the [Releases](../../releases/latest) page.
+Press **Home** on your remote. If your TV asks which home screen to use, pick **Shelf** → **Always**. That's it.
 
-### With ADB from a computer
+### Sony Bravia and other TVs that don't ask
 
-```
-adb connect <TV-IP>:5555
-adb install -r ShelfLauncher.apk
-```
-
-## Make it your home screen
-
-Press **Home** on the remote. If your TV asks which app to use, choose **Shelf** → **Always**.
-
-### TVs that don't ask (Sony Bravia and many others): no computer needed
+No computer needed:
 
 1. Open **Shelf** from your TV's app list.
-2. Select the orange **הגדר כפתור בית** ("set up Home button") pill at the top.
-3. In the list that opens, choose **Shelf – כפתור הבית** and turn it on.
+2. Select the orange **Set up Home button** pill at the top (currently labeled in Hebrew: *הגדר כפתור בית*).
+3. Turn on **Shelf – כפתור הבית** in the list that opens.
 
-From now on the Home button brings you to Shelf. The built-in launcher may flash for a split second first. The service only checks which app is in front; it doesn't read anything on screen.
+From now on, Home takes you straight to Shelf. The orange pill disappears once it's set up.
 
-### Or: switch off the built-in launcher with ADB
+<details>
+<summary><b>Prefer ADB? Turn off the built-in launcher instead</b></summary>
 
-If you have a computer, you can instead turn off the built-in launcher once:
-
-1. On the TV: Settings → Device Preferences → About → click **Build** 7 times to enable developer options.
+1. On the TV: Settings → Device Preferences → About → click **Build** 7 times.
 2. Settings → Device Preferences → Developer options → turn on **USB debugging** (and **Network debugging** if listed).
 3. From a computer on the same network:
 
@@ -81,37 +101,43 @@ If you have a computer, you can instead turn off the built-in launcher once:
    adb shell cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME
    ```
 
-   The last line shows the current launcher, usually `com.google.android.tvlauncher/...`. Disable it (this does not delete it):
+   The last line shows your current launcher, usually `com.google.android.tvlauncher/...`. Disable it (this doesn't delete it):
 
    ```
    adb shell pm disable-user --user 0 com.google.android.tvlauncher
    ```
 
-**To get the original launcher back at any time:**
+To bring the original launcher back at any time:
 
 ```
 adb shell pm enable com.google.android.tvlauncher
 ```
 
-Save this command somewhere before you disable anything.
+</details>
 
-## Updating
+## FAQ
 
-Install from the same code or link again. New versions install over the old one; your settings stay.
+**Is it safe?**
+Every version is built automatically from the code you see here, then installed and tested on an Android TV emulator before it's published. If a test fails, the version never goes out. You can follow every build under [Actions](../../actions).
 
-## Is it safe?
+**What does the Home button service do?**
+It only notices when your TV's built-in launcher comes to the front and opens Shelf instead. It doesn't read anything on your screen.
 
-Every version is built automatically from the code in this repository by GitHub Actions, then installed and tested on an Android TV emulator. A version is only published if the test passes. You can see every build under [Actions](../../actions).
+**Can I go back to my old home screen?**
+Anytime. Turn off *Shelf – כפתור הבית* in Accessibility settings, or uninstall Shelf. Nothing on your TV is changed permanently.
 
-The launcher asks for no special permissions. It only reads the list of installed apps so it can show them.
+**Does it work on my TV?**
+Shelf runs on Android TV 8.0 and newer. Every version is tested on an Android TV 10 emulator, and it runs on a Sony Bravia. The menus are in Hebrew for now.
+
+**How do I update?**
+Shelf tells you when there's a new version. You can also reinstall from the same Downloader code anytime; your layout and settings stay.
 
 ## Build it yourself
 
-Open the project in [Android Studio](https://developer.android.com/studio) and run **Build → Build APK(s)**. Without the signing secrets the APK is signed with your debug key.
+Open the project in [Android Studio](https://developer.android.com/studio) and run **Build → Build APK(s)**.
 
-## Notes
+---
 
-- Live background blur needs Android 12. On older TVs the backdrop is the app's banner scaled down and stretched, which gives a soft blur at almost no cost.
-- Shelf is an independent project inspired by the design of tvOS. It is not affiliated with, endorsed by, or connected to Apple or Google. tvOS and Apple TV are trademarks of Apple Inc.
+<sub>Shelf is an independent project inspired by the design of tvOS. It is not affiliated with, endorsed by, or connected to Apple or Google. tvOS and Apple TV are trademarks of Apple Inc. All app names and artwork shown belong to their owners.</sub>
 
-[עברית](README.he.md)
+<sub>[עברית](README.he.md)</sub>
