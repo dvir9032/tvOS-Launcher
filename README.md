@@ -68,6 +68,18 @@ No account, no ads, no tracking, no internet needed (except for checking updates
 3. Allow Downloader to install apps when asked.
 4. Hit **Install**. Done.
 
+> [!IMPORTANT]
+> **"App blocked to protect your device" from Google Play Protect?**
+> Google automatically blocks apps installed from outside the Play Store when they include an accessibility service, which Shelf uses to make the Home button work on TVs like Sony Bravia. It's a blanket rule based on that permission, not a sign that anything is wrong with Shelf.
+>
+> To install anyway:
+> 1. Open the **Google Play Store** on your TV → your profile or Settings → **Play Protect** → ⚙️ → turn off **Scan apps with Play Protect**. (The exact path varies a little between TVs.)
+> 2. Install Shelf again from Downloader.
+> 3. **Turn Play Protect back on.** It keeps protecting you from other apps.
+
+> [!TIP]
+> In Downloader, enter the code on the **Home** screen (☰ → Home), in the field *Enter a URL, search term, or short code*, not in the Browser tab.
+
 ### Other ways
 
 - **Direct link** (in Downloader or any TV browser):
