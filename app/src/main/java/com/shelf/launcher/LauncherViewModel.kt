@@ -11,6 +11,7 @@ import com.shelf.launcher.data.Prefs
 import com.shelf.launcher.data.ShelfPrefs
 import com.shelf.launcher.data.TvApp
 import com.shelf.launcher.data.TvSource
+import com.shelf.launcher.home.HomeButtonService
 import com.shelf.launcher.update.UpdateState
 import com.shelf.launcher.update.Updater
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +44,13 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     private val _homePresses = MutableStateFlow(0)
     val homePresses: StateFlow<Int> = _homePresses.asStateFlow()
 
+    /** True when the Home button still opens the TV's own launcher. */
+    private val _homeSetupNeeded = MutableStateFlow(false)
+    val homeSetupNeeded: StateFlow<Boolean> = _homeSetupNeeded.asStateFlow()
+
+    private val _homeServiceOn = MutableStateFlow(false)
+    val homeServiceOn: StateFlow<Boolean> = _homeServiceOn.asStateFlow()
+
     val versionName: String = BuildConfig.VERSION_NAME
 
     private var loadJob: Job? = null
@@ -50,6 +58,11 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Called whenever the launcher comes back to the front. */
     fun refresh() {
+        val app = getApplication<Application>()
+        val serviceOn = HomeButtonService.isEnabled(app)
+        _homeServiceOn.value = serviceOn
+        _homeSetupNeeded.value = !serviceOn && !HomeButtonService.isDefaultHome(app)
+
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
             val fresh = withContext(Dispatchers.IO) { repository.load() }
@@ -108,6 +121,15 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     fun launchSource(source: TvSource) {
         runCatching { getApplication<Application>().startActivity(source.intent) }
+    }
+
+    /** Opens the TV's accessibility settings, where the Home button service is switched on. */
+    fun openHomeSetup() {
+        val app = getApplication<Application>()
+        val opened = runCatching {
+            app.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }.isSuccess
+        if (!opened) openSystemSettings()
     }
 
     fun openSystemSettings() {

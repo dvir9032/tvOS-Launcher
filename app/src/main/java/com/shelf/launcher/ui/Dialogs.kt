@@ -158,6 +158,8 @@ fun SettingsPanel(
     hasSources: Boolean,
     update: UpdateState,
     versionName: String,
+    homeServiceOn: Boolean,
+    onHomeSetup: () -> Unit,
     onChange: ((ShelfPrefs) -> ShelfPrefs) -> Unit,
     onUnhide: (String) -> Unit,
     onResetOrder: () -> Unit,
@@ -218,6 +220,9 @@ fun SettingsPanel(
                         }
 
                         item { SectionLabel("מערכת") }
+                        item {
+                            MenuButton("כפתור הבית", value = if (homeServiceOn) "פעיל" else "להפעלה", onClick = onHomeSetup)
+                        }
                         item { MenuButton("עדכונים", value = updateLabel(update, versionName), onClick = onUpdateClick) }
                         item { MenuButton("הגדרות הטלוויזיה", onClick = onSystemSettings) }
                     }

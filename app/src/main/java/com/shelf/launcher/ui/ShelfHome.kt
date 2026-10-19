@@ -70,6 +70,8 @@ fun ShelfHome(vm: LauncherViewModel) {
     val sources by vm.sources.collectAsState()
     val update by vm.update.collectAsState()
     val homePresses by vm.homePresses.collectAsState()
+    val homeSetupNeeded by vm.homeSetupNeeded.collectAsState()
+    val homeServiceOn by vm.homeServiceOn.collectAsState()
 
     val columns = prefs.columns
     val arranged = remember(allApps, prefs.order) { arrange(allApps, prefs.order) }
@@ -185,6 +187,9 @@ fun ShelfHome(vm: LauncherViewModel) {
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (homeSetupNeeded) {
+                ActionPill(text = "הגדר כפתור בית", onClick = vm::openHomeSetup, color = Color(0xFFE8862E))
+            }
             UpdatePill(state = update, onClick = vm::installUpdate)
             ClockPill(mode = prefs.clock)
             GlassIconButton(onClick = { settingsOpen = true }) { focused -> SettingsGlyph(focused) }
@@ -293,6 +298,8 @@ fun ShelfHome(vm: LauncherViewModel) {
             hasSources = sources.isNotEmpty(),
             update = update,
             versionName = vm.versionName,
+            homeServiceOn = homeServiceOn,
+            onHomeSetup = vm::openHomeSetup,
             onChange = vm::updatePrefs,
             onUnhide = vm::unhide,
             onResetOrder = vm::resetOrder,

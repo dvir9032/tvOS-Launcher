@@ -258,6 +258,17 @@ fun UpdatePill(state: UpdateState, onClick: () -> Unit, modifier: Modifier = Mod
         UpdateState.Installing -> "מתקין…"
         else -> return
     }
+    ActionPill(text = text, onClick = onClick, modifier = modifier)
+}
+
+/** A bright pill button in the top bar. */
+@Composable
+fun ActionPill(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    color: Color = Color(0xFF2F7BF6),
+) {
     var focused by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(if (focused) 1.08f else 1f, tween(150), label = "updatePill")
     Box(
@@ -269,7 +280,7 @@ fun UpdatePill(state: UpdateState, onClick: () -> Unit, modifier: Modifier = Mod
             }
             .onFocusChanged { focused = it.isFocused }
             .tvClickable(onClick = onClick)
-            .background(if (focused) Color.White else Color(0xFF2F7BF6), CircleShape)
+            .background(if (focused) Color.White else color, CircleShape)
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.Center,
     ) {

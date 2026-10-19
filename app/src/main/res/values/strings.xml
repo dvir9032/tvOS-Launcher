@@ -2,4 +2,6 @@
 <resources>
     <string name="app_name">Shelf</string>
     <string name="settings">הגדרות</string>
+    <string name="home_service_label">Shelf – כפתור הבית</string>
+    <string name="home_service_description">פותח את Shelf בכל פעם שהלאנצ\'ר המובנה של הטלוויזיה עולה, כך שכפתור הבית בשלט מוביל ל־Shelf. השירות רק בודק איזו אפליקציה פתוחה, ולא קורא את התוכן שעל המסך.</string>
 </resources>

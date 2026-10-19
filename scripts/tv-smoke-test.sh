@@ -26,15 +26,20 @@ press() {
 adb logcat -c || true
 adb install -r ShelfLauncher.apk | tee -a "$LOG"
 
-echo "--- disable the stock launcher (same as the README tells you to do on the TV)" | tee -a "$LOG"
-adb shell pm disable-user --user 0 com.google.android.tvlauncher 2>&1 | tee -a "$LOG"
-
-echo "--- set home" | tee -a "$LOG"
-adb shell cmd package set-home-activity "$PKG/.MainActivity" 2>&1 | tee -a "$LOG"
-
+# Like a Sony TV: the built-in launcher stays enabled and stays the default home.
 echo "--- start directly" | tee -a "$LOG"
 adb shell am start -W -n "$PKG/.MainActivity" 2>&1 | tee -a "$LOG"
 sleep 8
+shot 0-setup-pill   # should show the orange "set up Home button" pill
+
+# What the user does once with the remote: switch on Shelf in Accessibility.
+echo "--- enable the Home button accessibility service" | tee -a "$LOG"
+adb shell settings put secure enabled_accessibility_services "$PKG/$PKG.home.HomeButtonService"
+adb shell settings put secure accessibility_enabled 1
+sleep 4
+
+# Home now goes to the built-in launcher first; the service should bring Shelf back.
+press KEYCODE_HOME; sleep 5
 shot 1-start
 
 press KEYCODE_DPAD_RIGHT; shot 2-right
