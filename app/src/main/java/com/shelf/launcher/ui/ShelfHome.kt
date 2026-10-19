@@ -34,7 +34,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.shelf.launcher.LauncherViewModel
 import com.shelf.launcher.data.SOURCE_PREFIX
@@ -139,6 +141,9 @@ fun ShelfHome(vm: LauncherViewModel) {
         focusOn(key)
     }
 
+    // The home screen keeps the tvOS layout (title top-left, apps left to right) even
+    // when the TV is set to a right-to-left language. Menus and settings stay RTL.
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
     BoxWithConstraints(
         Modifier
             .fillMaxSize()
@@ -265,6 +270,7 @@ fun ShelfHome(vm: LauncherViewModel) {
                 }
             }
         }
+    }
     }
 
     menuFor?.let { app ->
