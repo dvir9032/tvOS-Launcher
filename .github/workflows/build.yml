@@ -35,7 +35,7 @@ jobs:
           fi
           chmod +x gradlew
           set +e
-          ./gradlew assembleRelease --no-daemon 2>&1 | tee build.log
+          ./gradlew :app:assembleRelease :demo-apps:assembleDebug --no-daemon 2>&1 | tee build.log
           status=${PIPESTATUS[0]}
           set -e
           if [ "$status" -ne 0 ]; then
@@ -45,6 +45,8 @@ jobs:
             exit 1
           fi
           cp app/build/outputs/apk/release/app-release.apk ShelfLauncher.apk
+          mkdir -p demo-apks
+          cp demo-apps/build/outputs/apk/*/debug/*.apk demo-apks/
 
       # Runs the launcher on an Android TV 10 emulator before publishing.
       - name: Enable KVM
@@ -62,7 +64,18 @@ jobs:
           profile: tv_1080p
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
-          script: bash scripts/tv-smoke-test.sh
+          script: |
+            bash scripts/tv-smoke-test.sh
+            bash scripts/record-demo.sh || true
+
+      - name: Make demo GIF
+        if: always()
+        run: |
+          [ -f screenshots/demo.mp4 ] || exit 0
+          command -v ffmpeg > /dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; }
+          ffmpeg -y -loglevel error -i screenshots/demo.mp4 \
+            -vf "fps=15,scale=960:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4" \
+            screenshots/demo.gif || true
 
       - name: Save screenshots
         if: always()
