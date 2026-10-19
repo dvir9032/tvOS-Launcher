@@ -1,6 +1,10 @@
 package com.shelf.launcher.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.gestures.BringIntoViewSpec
+import androidx.compose.foundation.gestures.LocalBringIntoViewSpec
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +38,19 @@ import kotlinx.coroutines.launch
 
 private const val COLUMNS = 6
 
+@OptIn(ExperimentalFoundationApi::class)
+private val MinimalBringIntoView = object : BringIntoViewSpec {
+    override fun calculateScrollDistance(offset: Float, size: Float, containerSize: Float): Float {
+        val trailing = offset + size
+        return when {
+            offset >= 0f && trailing <= containerSize -> 0f // already fully visible
+            offset < 0f && trailing > containerSize -> 0f   // bigger than the screen
+            offset < 0f -> offset                            // cut off at the top
+            else -> trailing - containerSize                 // cut off at the bottom
+        }
+    }
+}
+
 /**
  * The home screen: full-screen artwork of the focused app, its name in the
  * top corner, a clock pill, a glass dock with the first row of apps and the
@@ -41,6 +58,7 @@ private const val COLUMNS = 6
  *
  * All sizes are fractions of the screen so it looks the same on any TV density.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShelfHome(
     apps: List<TvApp>,
@@ -111,6 +129,9 @@ fun ShelfHome(
                 .padding(top = h * 0.048f, end = w * 0.033f)
         )
 
+        // On TVs Compose scrolls the focused row to ~30% of the screen by default,
+        // which pulls the dock up. Only scroll when a row is actually cut off.
+        CompositionLocalProvider(LocalBringIntoViewSpec provides MinimalBringIntoView) {
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
@@ -143,6 +164,7 @@ fun ShelfHome(
                     Box(Modifier.padding(horizontal = sidePad + trayPadH)) { rowContent() }
                 }
             }
+        }
         }
     }
 

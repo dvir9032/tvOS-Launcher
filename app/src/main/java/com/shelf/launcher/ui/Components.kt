@@ -210,7 +210,7 @@ fun AppTile(
     onClick: () -> Unit,
 ) {
     var isFocused by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(if (isFocused) 1.16f else 1f, tween(180), label = "scale")
+    val scale by animateFloatAsState(if (isFocused) 1.10f else 1f, tween(180), label = "scale")
     val glare by animateFloatAsState(if (isFocused) 0.38f else 0.10f, tween(180), label = "glare")
     val shape = RoundedCornerShape(height * 0.19f)
     val interaction = remember { MutableInteractionSource() }

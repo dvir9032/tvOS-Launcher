@@ -26,6 +26,9 @@ press() {
 adb logcat -c || true
 adb install -r ShelfLauncher.apk | tee -a "$LOG"
 
+echo "--- disable the stock launcher (same as the README tells you to do on the TV)" | tee -a "$LOG"
+adb shell pm disable-user --user 0 com.google.android.tvlauncher 2>&1 | tee -a "$LOG"
+
 echo "--- set home" | tee -a "$LOG"
 adb shell cmd package set-home-activity "$PKG/.MainActivity" 2>&1 | tee -a "$LOG"
 
