@@ -72,6 +72,17 @@ jobs:
           path: screenshots/
           if-no-files-found: ignore
 
+      # Also publish the screenshots to a branch, so they can be viewed without signing in.
+      - name: Publish test results branch
+        if: always()
+        run: |
+          [ -d screenshots ] || exit 0
+          cd screenshots
+          git init -q -b test-results
+          git add -A
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "Test results for run ${{ github.run_number }}"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" test-results
+
       # Only reached when the build and the emulator test both passed.
       - name: Publish release
         uses: softprops/action-gh-release@v2
