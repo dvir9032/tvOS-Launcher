@@ -73,13 +73,13 @@ fun MenuButton(
             modifier = Modifier.weight(1f),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = TextStyle(color = color, fontSize = 17.sp, fontWeight = FontWeight.Medium),
+            style = TextStyle(fontFamily = Heebo, color = color, fontSize = 17.sp, fontWeight = FontWeight.Medium),
         )
         if (value != null) {
             BasicText(
                 text = value,
                 maxLines = 1,
-                style = TextStyle(color = color.copy(alpha = 0.7f), fontSize = 15.sp),
+                style = TextStyle(fontFamily = Heebo, color = color.copy(alpha = 0.7f), fontSize = 15.sp),
             )
         }
     }
@@ -90,7 +90,7 @@ private fun SectionLabel(text: String) {
     BasicText(
         text = text,
         modifier = Modifier.padding(top = 10.dp, bottom = 2.dp, start = 4.dp),
-        style = TextStyle(color = Color.White.copy(alpha = 0.55f), fontSize = 14.sp, fontWeight = FontWeight.SemiBold),
+        style = TextStyle(fontFamily = Heebo, color = Color.White.copy(alpha = 0.55f), fontSize = 14.sp, fontWeight = FontWeight.SemiBold),
     )
 }
 
@@ -99,7 +99,7 @@ private fun HintText(text: String) {
     BasicText(
         text = text,
         modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp),
-        style = TextStyle(color = Color.White.copy(alpha = 0.6f), fontSize = 14.sp),
+        style = TextStyle(fontFamily = Heebo, color = Color.White.copy(alpha = 0.6f), fontSize = 14.sp),
     )
 }
 
@@ -129,7 +129,7 @@ fun ActionMenu(
                     modifier = Modifier.padding(start = 4.dp, bottom = 6.dp),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = TextStyle(color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold),
+                    style = TextStyle(fontFamily = Heebo, color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold),
                 )
                 MenuButton("פתח", Modifier.focusRequester(first), onClick = onOpen)
                 MenuButton("הזז", onClick = onMove)
@@ -183,7 +183,7 @@ fun SettingsPanel(
                     BasicText(
                         text = "הגדרות",
                         modifier = Modifier.padding(start = 4.dp),
-                        style = TextStyle(color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold),
+                        style = TextStyle(fontFamily = Heebo, color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold),
                     )
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         item { SectionLabel("מראה") }

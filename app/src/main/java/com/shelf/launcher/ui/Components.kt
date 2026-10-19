@@ -48,9 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.font.Typeface
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -68,9 +66,6 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-private val CondensedBold = FontFamily(
-    Typeface(android.graphics.Typeface.create("sans-serif-condensed", android.graphics.Typeface.BOLD))
-)
 private val Ink = Color(0xFF0B0E13)
 
 enum class MoveDir { LEFT, RIGHT, UP, DOWN }
@@ -154,10 +149,9 @@ fun ShelfTitle(text: String, fontSize: Dp, modifier: Modifier = Modifier) {
         modifier = modifier,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
-        style = TextStyle(
+        style = TextStyle(fontFamily = Heebo, 
             color = Color.White,
-            fontFamily = CondensedBold,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.ExtraBold,
             fontSize = size,
             lineHeight = size * 0.95f,
             shadow = Shadow(
@@ -201,7 +195,7 @@ fun ClockPill(mode: ClockMode, modifier: Modifier = Modifier) {
     ) {
         BasicText(
             text = now,
-            style = TextStyle(color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold),
+            style = TextStyle(fontFamily = Heebo, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold),
         )
         Box(
             Modifier
@@ -286,7 +280,7 @@ fun ActionPill(
     ) {
         BasicText(
             text = text,
-            style = TextStyle(
+            style = TextStyle(fontFamily = Heebo, 
                 color = if (focused) Ink else Color.White,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -419,7 +413,7 @@ fun AppTile(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .padding(8.dp),
-                style = TextStyle(color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold),
+                style = TextStyle(fontFamily = Heebo, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold),
             )
         }
         // Glare + rim (a pulsing white rim while moving)
@@ -486,7 +480,7 @@ fun SourceTile(
             text = source.label,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = TextStyle(color = textColor, fontSize = 15.sp, fontWeight = FontWeight.SemiBold),
+            style = TextStyle(fontFamily = Heebo, color = textColor, fontSize = 15.sp, fontWeight = FontWeight.SemiBold),
         )
     }
 }
