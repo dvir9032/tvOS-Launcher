@@ -116,10 +116,12 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     fun resetOrder() = prefsStore.update { it.copy(order = emptyList()) }
 
     fun launch(app: TvApp) {
+        HomeButtonService.stayQuiet()
         runCatching { getApplication<Application>().startActivity(app.intent) }
     }
 
     fun launchSource(source: TvSource) {
+        HomeButtonService.stayQuiet()
         runCatching { getApplication<Application>().startActivity(source.intent) }
     }
 

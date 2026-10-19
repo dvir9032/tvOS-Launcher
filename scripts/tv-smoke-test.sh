@@ -50,6 +50,13 @@ press KEYCODE_HOME;       sleep 3; shot 6-home-button
 
 # Open the focused app and come back with Home.
 press KEYCODE_DPAD_CENTER; sleep 4; shot 7-opened-app
+# The app the user opened must stay in front (the Home button service must not cover it).
+sleep 3
+if resumed | grep -q "$PKG"; then
+  echo "::error title=Opened app was covered::Shelf came back over the app it just opened. $(resumed)"
+  exit 1
+fi
+echo "7b-app-still-open :: $(resumed)" | tee -a "$LOG"
 press KEYCODE_HOME;        sleep 4; shot 8-back-home
 
 # --- 2.0 features ---

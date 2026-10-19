@@ -20,10 +20,12 @@ import com.shelf.launcher.MainActivity
 class HomeButtonService : AccessibilityService() {
 
     private var builtInLaunchers: Set<String> = emptySet()
+    private var launcherActivities: Set<String> = emptySet()
     private var lastLaunch = 0L
 
     override fun onServiceConnected() {
         builtInLaunchers = otherLaunchers(this)
+        launcherActivities = otherLauncherActivities(this)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
@@ -31,7 +33,14 @@ class HomeButtonService : AccessibilityService() {
         val pkg = event.packageName?.toString() ?: return
         if (pkg !in builtInLaunchers) return
 
+        // Only the launcher's own screen coming up counts, not a popup or view inside it.
+        val cls = event.className?.toString()
+        if (cls != null && cls !in launcherActivities && cls.startsWith("android.")) return
+
         val now = SystemClock.elapsedRealtime()
+        // Shelf just opened an app: the built-in launcher can flash by during that
+        // transition, and taking over then would cover the app the user picked.
+        if (now < quietUntil) return
         if (now - lastLaunch < 700) return
         lastLaunch = now
 
@@ -49,16 +58,30 @@ class HomeButtonService : AccessibilityService() {
         // Settings apps also register a fallback home screen; never take over those.
         private val NEVER_REPLACE = setOf("com.android.settings", "com.android.tv.settings")
 
-        /** Every other installed home screen (the TV's own launcher). */
-        fun otherLaunchers(context: Context): Set<String> {
-            val pm = context.packageManager
+        /** Elapsed-realtime until which the service stays out of the way. */
+        @Volatile
+        private var quietUntil = 0L
+
+        /** Called by Shelf right before it opens an app. */
+        fun stayQuiet(millis: Long = 3000) {
+            quietUntil = SystemClock.elapsedRealtime() + millis
+        }
+
+        private fun homeActivities(context: Context) = run {
             val home = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
             @Suppress("DEPRECATION")
-            val found = pm.queryIntentActivities(home, PackageManager.MATCH_DISABLED_COMPONENTS)
-            return found.mapNotNull { it.activityInfo?.packageName }
-                .filter { it != context.packageName && it !in NEVER_REPLACE }
-                .toSet()
+            context.packageManager.queryIntentActivities(home, PackageManager.MATCH_DISABLED_COMPONENTS)
+                .mapNotNull { it.activityInfo }
+                .filter { it.packageName != context.packageName && it.packageName !in NEVER_REPLACE }
         }
+
+        private fun otherLauncherActivities(context: Context): Set<String> =
+            homeActivities(context).map { it.targetActivity ?: it.name }.toSet() +
+                homeActivities(context).map { it.name }.toSet()
+
+        /** Every other installed home screen (the TV's own launcher). */
+        fun otherLaunchers(context: Context): Set<String> =
+            homeActivities(context).map { it.packageName }.toSet()
 
         /** Is Shelf already what the Home button opens on its own? */
         fun isDefaultHome(context: Context): Boolean {
