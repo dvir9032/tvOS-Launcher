@@ -71,11 +71,9 @@ jobs:
       - name: Make demo GIF
         if: always()
         run: |
-          [ -f screenshots/demo.mp4 ] || exit 0
+          [ -d screenshots/demo ] || exit 0
           command -v ffmpeg > /dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; }
-          ffmpeg -y -loglevel error -i screenshots/demo.mp4 \
-            -vf "fps=15,scale=960:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4" \
-            screenshots/demo.gif || true
+          bash scripts/make-demo-video.sh || true
 
       - name: Save screenshots
         if: always()
