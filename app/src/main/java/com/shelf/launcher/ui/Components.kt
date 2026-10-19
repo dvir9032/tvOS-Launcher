@@ -59,13 +59,16 @@ private val CondensedBold = FontFamily(
 /** Full-screen artwork that cross-fades whenever focus moves to another app. */
 @Composable
 fun Backdrop(app: TvApp?, modifier: Modifier = Modifier) {
+    // Fade by app key, so reloading the app list doesn't restart the fade.
+    val byKey = remember { mutableMapOf<String, TvApp>() }
+    app?.let { byKey[it.key] = it }
     Crossfade(
-        targetState = app,
+        targetState = app?.key,
         modifier = modifier,
         animationSpec = tween(450),
         label = "backdrop",
-        contentKey = { it?.key },
-    ) { current ->
+    ) { key ->
+        val current = key?.let { byKey[it] }
         Box(Modifier.fillMaxSize()) {
             val top = current?.tint ?: Color(0xFF25305E)
             val bottom = current?.tintDark ?: Color(0xFF0B1530)
