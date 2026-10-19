@@ -22,11 +22,24 @@ done
 # Home button service like a user would, so there's no setup pill in the shot.
 adb uninstall "$PKG" > /dev/null 2>&1 || true
 adb install ShelfLauncher.apk > /dev/null && echo "reinstalled Shelf"
+# Clear the setting first: writing the same value again doesn't make Android
+# reconnect the service after a reinstall.
+adb shell settings delete secure enabled_accessibility_services > /dev/null 2>&1 || true
+sleep 2
 adb shell settings put secure enabled_accessibility_services "$PKG/$PKG.home.HomeButtonService"
 adb shell settings put secure accessibility_enabled 1
-sleep 4
+sleep 6
 adb shell input keyevent KEYCODE_HOME   # built-in launcher → service → Shelf
 sleep 10
+
+# Make sure Shelf is the one on screen before recording.
+in_front() { adb shell dumpsys activity activities | grep -m1 -E "mResumedActivity|ResumedActivity" | grep -q "$PKG"; }
+if ! in_front; then
+  echo "Shelf not in front yet, opening it directly"
+  adb shell am start -n "$PKG/.MainActivity" > /dev/null
+  sleep 10
+fi
+in_front || { echo "Shelf still not in front; skipping the demo"; exit 0; }
 
 n=0
 snap() {
