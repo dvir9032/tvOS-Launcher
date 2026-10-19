@@ -40,7 +40,7 @@ sleep 4
 
 # Home now goes to the built-in launcher first; the service should bring Shelf back.
 press KEYCODE_HOME; sleep 5
-shot 1-start
+shot 1-start   # the orange pill should be gone now
 
 press KEYCODE_DPAD_RIGHT; shot 2-right
 press KEYCODE_DPAD_RIGHT; shot 3-right-again

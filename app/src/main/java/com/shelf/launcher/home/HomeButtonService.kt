@@ -9,6 +9,7 @@ import android.os.SystemClock
 import android.provider.Settings
 import android.view.accessibility.AccessibilityEvent
 import com.shelf.launcher.MainActivity
+import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * For TVs that won't let you pick another home screen (Sony, many Google TV devices):
@@ -26,6 +27,17 @@ class HomeButtonService : AccessibilityService() {
     override fun onServiceConnected() {
         builtInLaunchers = otherLaunchers(this)
         launcherActivities = otherLauncherActivities(this)
+        running.value = true
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        running.value = false
+        return super.onUnbind(intent)
+    }
+
+    override fun onDestroy() {
+        running.value = false
+        super.onDestroy()
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
@@ -57,6 +69,9 @@ class HomeButtonService : AccessibilityService() {
     companion object {
         // Settings apps also register a fallback home screen; never take over those.
         private val NEVER_REPLACE = setOf("com.android.settings", "com.android.tv.settings")
+
+        /** True while the service is switched on and connected; Shelf watches this live. */
+        val running = MutableStateFlow(false)
 
         /** Elapsed-realtime until which the service stays out of the way. */
         @Volatile

@@ -57,11 +57,20 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     private var lastUpdateCheck = 0L
 
     /** Called whenever the launcher comes back to the front. */
-    fun refresh() {
+    init {
+        // The pill disappears the moment the service connects, not only on the next resume.
+        viewModelScope.launch { HomeButtonService.running.collect { checkHomeSetup() } }
+    }
+
+    private fun checkHomeSetup() {
         val app = getApplication<Application>()
-        val serviceOn = HomeButtonService.isEnabled(app)
+        val serviceOn = HomeButtonService.running.value || HomeButtonService.isEnabled(app)
         _homeServiceOn.value = serviceOn
         _homeSetupNeeded.value = !serviceOn && !HomeButtonService.isDefaultHome(app)
+    }
+
+    fun refresh() {
+        checkHomeSetup()
 
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
