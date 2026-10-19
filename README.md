@@ -1,112 +1,99 @@
-# Shelf Launcher
+# Shelf — a glass-dock launcher for Android TV
 
-לאנצ'ר לאנדרואיד TV בסגנון "מדף עליון ודוק זכוכית": תמונה של האפליקציה שבפוקוס ממלאת את המסך, שם האפליקציה בגדול בפינה, שעון בגלולת זכוכית, ודוק שקוף עם שורת האפליקציות הראשונה. שאר השורות מציצות מתחתית המסך ונגללות למעלה כשיורדים אליהן.
+A clean home screen for Android TV: the focused app's artwork fills the screen, its name sits big in the corner, and your apps live in a frosted-glass dock along the bottom.
 
-נבנה עבור סוני בראוויה עם Android TV 10 (עובד מ־Android 8 ומעלה).
+![Home screen](docs/screenshots/home.png)
 
-## מה יש בגרסה הזו
+![Moving focus changes the backdrop](docs/screenshots/focus.png)
 
-- כל האפליקציות המותקנות, עם הבאנר הרשמי שלהן לטלוויזיה (או אייקון, אם אין באנר), ובסוף אריח הגדרות.
-- רקע מטושטש וצבעי מעבר שנלקחים מהבאנר של האפליקציה שבפוקוס, עם מעבר רך.
-- אריח שבפוקוס גדל, מתרומם ומקבל ברק.
-- כפתור הבית מחזיר לאריח הראשון, וכפתור חזור גולל למעלה (ללאנצ'ר אין "אחורה").
-- הרשימה מתעדכנת לבד כשמתקינים או מסירים אפליקציה.
+*Screenshots from an Android TV 10 emulator. On your TV the dock shows your own apps.*
 
-## הדרך הקלה: GitHub + Downloader (בלי להתקין כלום במחשב)
+## Features
 
-GitHub בונה את ה־APK בענן ומפרסם אותו בקישור קבוע, ו־Downloader בטלוויזיה מתקין אותו.
+- Full-screen backdrop that takes the colors of the focused app and fades as you move
+- Glass dock with your installed apps, using each app's official TV banner
+- Focused tile lifts and catches a glare
+- Clock in the top corner
+- Home button jumps back to the first app; Back scrolls to the top
+- Updates itself when you install or remove apps
+- Works on Android TV 8.0 and newer, no account or internet needed
 
-**פעם אחת, במחשב:**
-1. פתח חשבון ב־[github.com](https://github.com).
-2. למעלה: **+** ← **New repository**. תן שם, למשל `ShelfLauncher`, ובחר **Public**. (בריפו פרטי הקישור לא יעבוד ב־Downloader.)
-3. בדף הריפו החדש: **uploading an existing file**. גרור לשם את **כל התוכן** של תיקיית `ShelfLauncher` (לא את התיקייה עצמה) ולחץ **Commit changes**.
-4. בדוק שהתיקייה `.github` הועלתה. במק ובווינדוס היא לפעמים מוסתרת ולא נגררת. אם היא חסרה: **Add file** ← **Create new file**, כתוב בשם `.github/workflows/build.yml`, הדבק את תוכן הקובץ ולחץ **Commit**.
-5. לשונית **Actions**: הבנייה רצה לבד ולוקחת כ־5 דקות. וי ירוק = הצליח.
+## Install
 
-**הקישור להורדה** (קבוע, תמיד לגרסה האחרונה):
+### Fastest: Downloader code
 
-```
-https://github.com/<שם-המשתמש>/ShelfLauncher/releases/latest/download/ShelfLauncher.apk
-```
+1. On your TV, install **Downloader** from the Google Play Store.
+2. Open Downloader and enter the code:
 
-**בטלוויזיה:**
-1. התקן את **Downloader** מ־Google Play.
-2. הגדרות ← אבטחה והגבלות ← מקורות לא ידועים ← לאפשר ל־Downloader.
-3. ב־Downloader הקלד את הקישור, לחץ Go ואשר התקנה.
+   ## `8100721`
 
-**עדכונים:** כל שינוי שמעלים ל־GitHub בונה גרסה חדשה באותו קישור. מתקינים שוב מ־Downloader, והיא נכנסת מעל הישנה.
+3. Allow Downloader to install unknown apps when asked
+   (or: Settings → Device Preferences → Security & restrictions → Unknown sources → Downloader).
+4. Tap **Install**.
 
-> מפתח החתימה (`app/shelf-release.keystore`) שמור בפרויקט בכוונה, כדי שכל גרסה תיחתם באותה חתימה ותתעדכן בלי הסרה. החיסרון: מי שיש לו את הקובץ יכול לחתום אפליקציה בשם החבילה הזו. בשביל לאנצ'ר אישי זה בסדר.
+### Direct link
 
-## בנייה ב־Android Studio (אם מעדיפים במחשב)
-
-1. התקן את [Android Studio](https://developer.android.com/studio).
-2. File ← Open ← בחר את התיקייה `ShelfLauncher`. הסנכרון הראשון מוריד את Gradle והספריות ולוקח כמה דקות.
-3. Build ← Build App Bundle(s) / APK(s) ← Build APK(s).
-   הקובץ ייווצר ב־`app/build/outputs/apk/debug/app-debug.apk`.
-
-## התקנה על הטלוויזיה
-
-בטלוויזיה:
-1. הגדרות ← העדפות מכשיר ← מידע ← לחיצה 7 פעמים על **Build** (מופיעה הודעה שאתה מפתח).
-2. הגדרות ← העדפות מכשיר ← אפשרויות מפתחים ← להדליק **USB debugging** (ואם יש, גם **Network debugging**).
-3. רשום את כתובת ה־IP של הטלוויזיה (הגדרות ← רשת).
-
-במחשב (באותה רשת), מתוך תיקיית `platform-tools` של Android SDK:
+Open this link in Downloader, or in any browser on the TV:
 
 ```
-adb connect 192.168.1.50:5555
-adb install -r app-debug.apk
+https://github.com/dvir9032/tvOS-Launcher/releases/latest/download/ShelfLauncher.apk
 ```
 
-בפעם הראשונה תופיע בטלוויזיה בקשה לאשר את המחשב: אשר.
+It always points to the newest version. You can also grab the APK from the [Releases](../../releases/latest) page.
 
-## להפוך אותו למסך הבית
-
-לחץ על כפתור הבית בשלט. אם מופיעה בחירה, בחר **Shelf** ו"תמיד".
-
-אם לא מופיעה בחירה, בדוק מה הלאנצ'ר הנוכחי:
+### With ADB from a computer
 
 ```
-adb shell cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME
+adb connect <TV-IP>:5555
+adb install -r ShelfLauncher.apk
 ```
 
-השורה האחרונה היא `שם.החבילה/שם.המסך`. כבה את החבילה הזו (זה לא מוחק אותה):
+## Make it your home screen
 
-```
-adb shell pm disable-user --user 0 com.google.android.tvlauncher
-```
+Press **Home** on the remote. If your TV asks which app to use, choose **Shelf** → **Always**.
 
-(החלף בשם החבילה שקיבלת, אם הוא שונה.)
+Many TVs (including Sony Bravia) don't ask and keep opening the built-in launcher. In that case, turn off the built-in launcher once with ADB:
 
-**להחזרת הלאנצ'ר המקורי בכל רגע:**
+1. On the TV: Settings → Device Preferences → About → click **Build** 7 times to enable developer options.
+2. Settings → Device Preferences → Developer options → turn on **USB debugging** (and **Network debugging** if listed).
+3. From a computer on the same network:
+
+   ```
+   adb connect <TV-IP>:5555
+   adb shell cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME
+   ```
+
+   The last line shows the current launcher, usually `com.google.android.tvlauncher/...`. Disable it (this does not delete it):
+
+   ```
+   adb shell pm disable-user --user 0 com.google.android.tvlauncher
+   ```
+
+**To get the original launcher back at any time:**
 
 ```
 adb shell pm enable com.google.android.tvlauncher
 ```
 
-כדאי לשמור את הפקודה הזו בצד לפני שמכבים.
+Save this command somewhere before you disable anything.
 
-## מבנה הקוד
+## Updating
 
-| קובץ | מה הוא עושה |
-|---|---|
-| `data/AppRepository.kt` | קורא את האפליקציות המותקנות, הבאנרים והצבעים |
-| `ui/ShelfHome.kt` | פריסת המסך: רקע, כותרת, שעון, דוק ושורות |
-| `ui/Components.kt` | הרקע, גלולת השעון, מגש הזכוכית והאריחים |
-| `LauncherViewModel.kt` | טעינה ברקע ורענון כשחוזרים ללאנצ'ר |
-| `MainActivity.kt` | נקודת הכניסה, כפתור הבית |
+Install from the same code or link again. New versions install over the old one; your settings stay.
 
-גדלים מוגדרים כאחוזים מהמסך, כך שהעיצוב נשמר בכל רזולוציה.
+## Is it safe?
 
-## הערות
+Every version is built automatically from the code in this repository by GitHub Actions, then installed and tested on an Android TV emulator. A version is only published if the test passes. You can see every build under [Actions](../../actions).
 
-- **טשטוש**: טשטוש אמיתי בזמן אמת זמין רק מ־Android 12. כאן הרקע הוא הבאנר מוקטן ל־20×12 פיקסלים ומתוח על כל המסך, מה שנותן טשטוש רך כמעט בלי עלות ביצועים.
-- **תמונות תוכן במדף העליון** (פוסטרים של סדרות כמו ב־Apple TV): אפליקציות אנדרואיד TV מפרסמות תוכן דרך ערוצי ה־TV Provider, אבל קריאת ערוצים של אפליקציות אחרות דורשת הרשאות מערכת. אפשרות פשוטה יותר להמשך: לאפשר לבחור תמונת רקע לכל אפליקציה.
+The launcher asks for no special permissions. It only reads the list of installed apps so it can show them.
 
-## רעיונות להמשך
+## Build it yourself
 
-- לחיצה ארוכה: הזזת אפליקציות, הסתרה, הצמדה לדוק.
-- שמירת סדר האפליקציות.
-- תמונת רקע מותאמת אישית לכל אפליקציה.
-- שורת מקורות (HDMI) מתחת לאפליקציות.
+Open the project in [Android Studio](https://developer.android.com/studio) and run **Build → Build APK(s)**. Without the signing secrets the APK is signed with your debug key.
+
+## Notes
+
+- Live background blur needs Android 12. On older TVs the backdrop is the app's banner scaled down and stretched, which gives a soft blur at almost no cost.
+- Shelf is an independent project, inspired by the look of modern TV home screens. It is not affiliated with Apple or Google.
+
+[עברית](README.he.md)
