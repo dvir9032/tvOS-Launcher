@@ -19,7 +19,11 @@ Bring the look of the Apple TV home screen to your Android TV: the focused app's
 - Focused tile lifts and catches a glare
 - Clock in the top corner
 - Home button jumps back to the first app; Back scrolls to the top
-- Updates itself when you install or remove apps
+- Long-press OK (or the Menu button) on an app to open, move or hide it
+- HDMI inputs row under the dock
+- Settings: apps per row, 12/24-hour clock, glass strength, backdrop style, hidden apps
+- Updates itself: an "update available" pill appears when a new version is out
+- Picks up apps you install or remove automatically
 - Works on Android TV 8.0 and newer, no account or internet needed
 
 ## Install
@@ -56,7 +60,17 @@ adb install -r ShelfLauncher.apk
 
 Press **Home** on the remote. If your TV asks which app to use, choose **Shelf** → **Always**.
 
-Many TVs (including Sony Bravia) don't ask and keep opening the built-in launcher. In that case, turn off the built-in launcher once with ADB:
+### TVs that don't ask (Sony Bravia and many others): no computer needed
+
+1. Open **Shelf** from your TV's app list.
+2. Select the orange **הגדר כפתור בית** ("set up Home button") pill at the top.
+3. In the list that opens, choose **Shelf – כפתור הבית** and turn it on.
+
+From now on the Home button brings you to Shelf. The built-in launcher may flash for a split second first. The service only checks which app is in front; it doesn't read anything on screen.
+
+### Or: switch off the built-in launcher with ADB
+
+If you have a computer, you can instead turn off the built-in launcher once:
 
 1. On the TV: Settings → Device Preferences → About → click **Build** 7 times to enable developer options.
 2. Settings → Device Preferences → Developer options → turn on **USB debugging** (and **Network debugging** if listed).
