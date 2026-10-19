@@ -18,13 +18,14 @@ for p in com.google.android.tv.remote.service com.google.android.play.games com.
   adb shell pm disable-user --user 0 "$p" > /dev/null 2>&1 || true
 done
 
-# Shelf as the only home screen, so there's no "set up Home button" pill in the shot.
-adb shell settings put secure enabled_accessibility_services '""' > /dev/null 2>&1 || true
-adb shell pm disable-user --user 0 com.google.android.tvlauncher > /dev/null 2>&1 || true
-
-# Fresh start: default order and settings.
-adb shell pm clear "$PKG" > /dev/null
-adb shell am start -n "$PKG/.MainActivity" > /dev/null
+# Fresh start (default order and settings): reinstall Shelf, then switch on the
+# Home button service like a user would, so there's no setup pill in the shot.
+adb uninstall "$PKG" > /dev/null 2>&1 || true
+adb install ShelfLauncher.apk > /dev/null && echo "reinstalled Shelf"
+adb shell settings put secure enabled_accessibility_services "$PKG/$PKG.home.HomeButtonService"
+adb shell settings put secure accessibility_enabled 1
+sleep 4
+adb shell input keyevent KEYCODE_HOME   # built-in launcher → service → Shelf
 sleep 10
 
 n=0
