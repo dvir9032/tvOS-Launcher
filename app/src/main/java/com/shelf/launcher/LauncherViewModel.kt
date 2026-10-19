@@ -1,10 +1,18 @@
 package com.shelf.launcher
 
 import android.app.Application
+import android.content.Intent
+import android.provider.Settings
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.shelf.launcher.data.AppRepository
+import com.shelf.launcher.data.InputRepository
+import com.shelf.launcher.data.Prefs
+import com.shelf.launcher.data.ShelfPrefs
 import com.shelf.launcher.data.TvApp
+import com.shelf.launcher.data.TvSource
+import com.shelf.launcher.update.UpdateState
+import com.shelf.launcher.update.Updater
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,34 +24,101 @@ import kotlinx.coroutines.withContext
 class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     private val repository = AppRepository(app)
+    private val inputRepository = InputRepository(app)
+    private val updater = Updater(app)
+    private val prefsStore = Prefs(app)
+
+    val prefs: StateFlow<ShelfPrefs> = prefsStore.state
 
     private val _apps = MutableStateFlow<List<TvApp>>(emptyList())
     val apps: StateFlow<List<TvApp>> = _apps.asStateFlow()
+
+    private val _sources = MutableStateFlow<List<TvSource>>(emptyList())
+    val sources: StateFlow<List<TvSource>> = _sources.asStateFlow()
+
+    private val _update = MutableStateFlow<UpdateState>(UpdateState.Idle)
+    val update: StateFlow<UpdateState> = _update.asStateFlow()
 
     /** Bumped every time the Home button is pressed while we're already showing. */
     private val _homePresses = MutableStateFlow(0)
     val homePresses: StateFlow<Int> = _homePresses.asStateFlow()
 
-    private var loadJob: Job? = null
+    val versionName: String = BuildConfig.VERSION_NAME
 
-    /** Re-reads installed apps; called whenever the launcher comes back to the front. */
+    private var loadJob: Job? = null
+    private var lastUpdateCheck = 0L
+
+    /** Called whenever the launcher comes back to the front. */
     fun refresh() {
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
             val fresh = withContext(Dispatchers.IO) { repository.load() }
-            // Skip the update when nothing was installed or removed, so the
-            // screen doesn't flash or lose focus every time you come back.
-            if (fresh.map { it.key } != _apps.value.map { it.key }) {
-                _apps.value = fresh
+            if (fresh.map { it.key } != _apps.value.map { it.key }) _apps.value = fresh
+            _sources.value = withContext(Dispatchers.IO) { inputRepository.load() }
+        }
+        // Coming back from a cancelled install: forget it and look again.
+        if (_update.value is UpdateState.Installing || _update.value is UpdateState.Failed) {
+            _update.value = UpdateState.Idle
+            lastUpdateCheck = 0L
+        }
+        if (System.currentTimeMillis() - lastUpdateCheck > SIX_HOURS) checkForUpdate()
+    }
+
+    fun checkForUpdate() {
+        val now = _update.value
+        if (now is UpdateState.Checking || now is UpdateState.Downloading) return
+        lastUpdateCheck = System.currentTimeMillis()
+        viewModelScope.launch {
+            _update.value = UpdateState.Checking
+            _update.value = updater.check()
+        }
+    }
+
+    fun installUpdate() {
+        val available = _update.value as? UpdateState.Available ?: return
+        viewModelScope.launch {
+            _update.value = UpdateState.Downloading(0f)
+            _update.value = updater.downloadAndInstall(available.url) { p ->
+                _update.value = UpdateState.Downloading(p)
             }
         }
+    }
+
+    fun onUpdateClicked() {
+        if (_update.value is UpdateState.Available) installUpdate() else checkForUpdate()
     }
 
     fun onHomePressed() {
         _homePresses.value += 1
     }
 
+    fun updatePrefs(transform: (ShelfPrefs) -> ShelfPrefs) = prefsStore.update(transform)
+
+    fun hide(key: String) = prefsStore.update { it.copy(hidden = it.hidden + key) }
+
+    fun unhide(key: String) = prefsStore.update { it.copy(hidden = it.hidden - key) }
+
+    fun saveOrder(keys: List<String>) = prefsStore.update { it.copy(order = keys) }
+
+    fun resetOrder() = prefsStore.update { it.copy(order = emptyList()) }
+
     fun launch(app: TvApp) {
         runCatching { getApplication<Application>().startActivity(app.intent) }
+    }
+
+    fun launchSource(source: TvSource) {
+        runCatching { getApplication<Application>().startActivity(source.intent) }
+    }
+
+    fun openSystemSettings() {
+        runCatching {
+            getApplication<Application>().startActivity(
+                Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        }
+    }
+
+    private companion object {
+        const val SIX_HOURS = 6 * 60 * 60 * 1000L
     }
 }

@@ -5,8 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import com.shelf.launcher.ui.ShelfHome
 
 class MainActivity : ComponentActivity() {
@@ -15,15 +13,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            val apps by viewModel.apps.collectAsState()
-            val homePresses by viewModel.homePresses.collectAsState()
-            ShelfHome(
-                apps = apps,
-                homePresses = homePresses,
-                onLaunch = viewModel::launch,
-            )
-        }
+        setContent { ShelfHome(viewModel) }
     }
 
     override fun onResume() {

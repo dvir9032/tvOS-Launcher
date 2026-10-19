@@ -47,6 +47,19 @@ press KEYCODE_HOME;       sleep 3; shot 6-home-button
 press KEYCODE_DPAD_CENTER; sleep 4; shot 7-opened-app
 press KEYCODE_HOME;        sleep 4; shot 8-back-home
 
+# --- 2.0 features ---
+# Long-press OK on the first app: the menu (Open / Move / Hide) should appear.
+adb shell input keyevent --longpress KEYCODE_DPAD_CENTER; shot 09-menu
+# Pick "Move", move the app one step right, confirm.
+press KEYCODE_DPAD_DOWN; sleep 1
+press KEYCODE_DPAD_CENTER; shot 10-move-mode
+press KEYCODE_DPAD_RIGHT;  shot 11-moved-right
+press KEYCODE_DPAD_CENTER; shot 12-move-done
+# Up to the settings button in the top bar, open settings.
+press KEYCODE_DPAD_UP; sleep 1
+press KEYCODE_DPAD_CENTER; shot 13-settings
+press KEYCODE_BACK; shot 14-settings-closed
+
 adb logcat -d > "$OUT/full-log.txt" || true
 grep -A40 "FATAL EXCEPTION" "$OUT/full-log.txt" > "$OUT/crash.txt" || true
 grep -E "$PKG|ShelfLauncher" "$OUT/full-log.txt" | tail -80 > "$OUT/app-log.txt" || true

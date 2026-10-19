@@ -15,7 +15,15 @@ android {
         // On GitHub every build gets a higher number, so updates install over the old version.
         val runNumber = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 0
         versionCode = 1 + runNumber
-        versionName = "0.1.$runNumber"
+        versionName = "2.0.$runNumber"
+
+        // Where the launcher looks for new versions.
+        buildConfigField("String", "UPDATE_REPO", "\"dvir9032/tvOS-Launcher\"")
+    }
+
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
     }
 
     // The signing key comes from GitHub secrets (never stored in the repo).
@@ -52,6 +60,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
