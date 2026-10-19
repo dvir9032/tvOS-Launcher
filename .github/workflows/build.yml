@@ -1,0 +1,73 @@
+name: Build and test APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build APK
+        env:
+          KEYSTORE_B64: ${{ secrets.SHELF_KEYSTORE_B64 }}
+          SHELF_KEYSTORE_PASSWORD: ${{ secrets.SHELF_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/shelf.keystore"
+            export SHELF_KEYSTORE_PATH="$RUNNER_TEMP/shelf.keystore"
+          else
+            echo "::warning::No signing secret set. Using a temporary key, so updates will need an uninstall first."
+          fi
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+          cp app/build/outputs/apk/release/app-release.apk ShelfLauncher.apk
+
+      # Runs the launcher on an Android TV 10 emulator before publishing.
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Test on Android TV emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          target: android-tv
+          arch: x86
+          profile: tv_1080p
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: bash scripts/tv-smoke-test.sh
+
+      - name: Save screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tv-screenshots
+          path: screenshots/
+          if-no-files-found: ignore
+
+      # Only reached when the build and the emulator test both passed.
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Shelf ${{ github.run_number }}
+          make_latest: "true"
+          files: ShelfLauncher.apk

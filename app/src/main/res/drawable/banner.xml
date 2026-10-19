@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 320x180 TV banner shown for this launcher in the TV's app list -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path
+        android:fillColor="#FF16233F"
+        android:pathData="M28,0 H292 A28,28 0 0 1 320,28 V152 A28,28 0 0 1 292,180 H28 A28,28 0 0 1 0,152 V28 A28,28 0 0 1 28,0 Z" />
+    <path
+        android:fillColor="#33FFFFFF"
+        android:pathData="M40,112 H280 A12,12 0 0 1 292,124 V140 A12,12 0 0 1 280,152 H40 A12,12 0 0 1 28,140 V124 A12,12 0 0 1 40,112 Z" />
+    <path
+        android:fillColor="#FF4FA3FF"
+        android:pathData="M46,120 H90 A6,6 0 0 1 96,126 V138 A6,6 0 0 1 90,144 H46 A6,6 0 0 1 40,138 V126 A6,6 0 0 1 46,120 Z" />
+    <path
+        android:fillColor="#FFFF6A72"
+        android:pathData="M110,120 H154 A6,6 0 0 1 160,126 V138 A6,6 0 0 1 154,144 H110 A6,6 0 0 1 104,138 V126 A6,6 0 0 1 110,120 Z" />
+    <path
+        android:fillColor="#FF5EE07A"
+        android:pathData="M174,120 H218 A6,6 0 0 1 224,126 V138 A6,6 0 0 1 218,144 H174 A6,6 0 0 1 168,138 V126 A6,6 0 0 1 174,120 Z" />
+    <path
+        android:fillColor="#FFFFB54D"
+        android:pathData="M238,120 H274 A6,6 0 0 1 280,126 V138 A6,6 0 0 1 274,144 H238 A6,6 0 0 1 232,138 V126 A6,6 0 0 1 238,120 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M146,36 L182,58 L146,80 Z" />
+</vector>
