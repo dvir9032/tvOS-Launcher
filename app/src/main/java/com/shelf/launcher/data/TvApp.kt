@@ -27,4 +27,10 @@ data class TvApp(
     val backdrop: ImageBitmap?,
     val tint: Color,
     val tintDark: Color,
-)
+    /** for a folder tile: the apps inside it */
+    val children: List<TvApp> = emptyList(),
+) {
+    val isFolder: Boolean get() = key.startsWith(FOLDER_PREFIX)
+}
+
+const val FOLDER_PREFIX = "folder:"

@@ -69,19 +69,37 @@ press KEYCODE_DPAD_DOWN; sleep 1
 press KEYCODE_DPAD_CENTER; shot 10-move-mode
 press KEYCODE_DPAD_RIGHT;  shot 11-moved-right
 press KEYCODE_DPAD_CENTER; shot 12-move-done
-# Up to the settings button in the top bar, open settings.
+# Up to the Control Center button in the top bar.
 press KEYCODE_DPAD_UP; sleep 1
+press KEYCODE_DPAD_CENTER; shot 12b-control-center
+# Settings is the first round button: down twice, then all the way left.
+press KEYCODE_DPAD_DOWN; sleep 1
+press KEYCODE_DPAD_DOWN; sleep 1
+for i in 1 2 3 4 5; do press KEYCODE_DPAD_LEFT; done; sleep 1
 press KEYCODE_DPAD_CENTER; shot 13-settings
 press KEYCODE_DPAD_CENTER; shot 13b-appearance      # first category
-press KEYCODE_DPAD_CENTER; shot 13c-apps-per-row    # changes 6 → 7
-press KEYCODE_DPAD_CENTER; sleep 1                  # 7 → 5
-press KEYCODE_DPAD_CENTER; sleep 1                  # 5 → 6, back to normal
+press KEYCODE_DPAD_CENTER; shot 13c-light-theme     # Theme: Dark → Light
+press KEYCODE_DPAD_CENTER; sleep 1                  # Light → Auto
+press KEYCODE_DPAD_CENTER; sleep 1                  # Auto → Dark, back to normal
 press KEYCODE_BACK;        shot 13d-settings-main
 press KEYCODE_DPAD_DOWN;   sleep 1
 press KEYCODE_DPAD_DOWN;   sleep 1
 press KEYCODE_DPAD_CENTER; shot 13e-home-button-page
 press KEYCODE_BACK;        sleep 1
 press KEYCODE_BACK;        shot 14-settings-closed
+
+# Light theme from Control Center, then back to dark.
+press KEYCODE_DPAD_UP;     sleep 1
+press KEYCODE_DPAD_CENTER; sleep 1
+press KEYCODE_DPAD_RIGHT;  sleep 1                  # Theme tile
+press KEYCODE_DPAD_CENTER; shot 14b-cc-light
+press KEYCODE_BACK;        shot 14c-home-light
+press KEYCODE_DPAD_UP;     sleep 1
+press KEYCODE_DPAD_CENTER; sleep 1
+press KEYCODE_DPAD_RIGHT;  sleep 1
+press KEYCODE_DPAD_CENTER; sleep 1                  # Light → Auto
+press KEYCODE_DPAD_CENTER; sleep 1                  # Auto → Dark
+press KEYCODE_BACK;        sleep 2
 
 # --- Top shelf: content from the focused app (YouTube is the 5th app in the dock) ---
 press KEYCODE_BACK; sleep 2                      # back to the first app
@@ -91,6 +109,20 @@ press KEYCODE_DPAD_UP;    sleep 3; shot 16-content-row
 press KEYCODE_DPAD_RIGHT; sleep 3; shot 17-content-next
 press KEYCODE_DPAD_DOWN;  sleep 1
 press KEYCODE_BACK;       sleep 2
+
+# --- Folders: first app → "Add to folder" → Games ---
+adb shell input keyevent --longpress KEYCODE_DPAD_CENTER; sleep 2
+for i in 1 2 3; do press KEYCODE_DPAD_DOWN; sleep 1; done
+press KEYCODE_DPAD_CENTER; shot 18-folder-picker
+press KEYCODE_DPAD_CENTER; shot 19-folder-tile
+press KEYCODE_DPAD_CENTER; shot 20-folder-open
+press KEYCODE_BACK;        sleep 2
+adb shell input keyevent --longpress KEYCODE_DPAD_CENTER; shot 21-folder-menu
+press KEYCODE_BACK;        sleep 2
+
+# --- Recent row (an app was opened earlier) ---
+press KEYCODE_DPAD_DOWN;   sleep 2; shot 22-recent
+press KEYCODE_BACK;        sleep 2
 
 adb logcat -d > "$OUT/full-log.txt" || true
 grep "ShelfContent" "$OUT/full-log.txt" | tail -5 | tee -a "$LOG"

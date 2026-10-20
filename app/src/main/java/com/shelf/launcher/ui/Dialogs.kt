@@ -83,7 +83,7 @@ private val Ink = Color(0xFF0B0E13)
 private val FullScreen = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
 
 /** One action in an app's menu. */
-data class MenuAction(@StringRes val label: Int, @DrawableRes val icon: Int, val onClick: () -> Unit)
+data class MenuAction(val label: String, @DrawableRes val icon: Int, val onClick: () -> Unit)
 
 /** Dark frosted glass with a bright top edge, like tvOS menus. */
 @Composable
@@ -94,12 +94,7 @@ fun GlassPanel(
     content: @Composable () -> Unit,
 ) {
     Box(
-        modifier.frostedGlass(
-            frost = frost,
-            shape = shape,
-            fallback = Brush.verticalGradient(listOf(Color(0xF22B303A), Color(0xF21A1E26))),
-            dim = 0.4f,
-        )
+        modifier.frostedGlass(frost = frost, shape = shape)
     ) {
         content()
     }
@@ -119,9 +114,10 @@ fun MenuRow(
     onClick: () -> Unit,
 ) {
     var focused by remember { mutableStateOf(false) }
+    val colors = LocalShelfColors.current
     val scale by animateFloatAsState(if (focused) 1.03f else 1f, tween(140), label = "row")
     val shape = RoundedCornerShape(height * 0.3f)
-    val color = if (focused) Ink else Color.White
+    val color = if (focused) colors.focusText else colors.text
     Row(
         modifier
             .fillMaxWidth()
@@ -132,7 +128,7 @@ fun MenuRow(
             }
             .onFocusChanged { focused = it.isFocused }
             .tvClickable(onClick = onClick)
-            .background(if (focused) Color.White else idleFill, shape)
+            .background(if (focused) colors.focusFill else idleFill, shape)
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -177,7 +173,7 @@ private fun SectionLabel(text: String) {
         modifier = Modifier.padding(top = 14.dp, bottom = 2.dp, start = 6.dp),
         style = TextStyle(
             fontFamily = ShelfFont,
-            color = Color.White.copy(alpha = 0.55f),
+            color = LocalShelfColors.current.subText,
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
         ),
@@ -189,7 +185,7 @@ private fun HintText(text: String) {
     BasicText(
         text = text,
         modifier = Modifier.padding(horizontal = 6.dp, vertical = 6.dp),
-        style = TextStyle(fontFamily = ShelfFont, color = Color.White.copy(alpha = 0.6f), fontSize = 15.sp, lineHeight = 21.sp),
+        style = TextStyle(fontFamily = ShelfFont, color = LocalShelfColors.current.subText, fontSize = 15.sp, lineHeight = 21.sp),
     )
 }
 
@@ -224,14 +220,14 @@ fun ActionMenu(
                                 overflow = TextOverflow.Ellipsis,
                                 style = TextStyle(
                                     fontFamily = ShelfFont,
-                                    color = Color.White.copy(alpha = 0.6f),
+                                    color = LocalShelfColors.current.subText,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.SemiBold,
                                 ),
                             )
                             actions.forEachIndexed { index, action ->
                                 MenuRow(
-                                    text = stringResource(action.label),
+                                    text = action.label,
                                     icon = action.icon,
                                     modifier = if (index == 0) Modifier.focusRequester(first) else Modifier,
                                     onClick = action.onClick,
@@ -294,9 +290,10 @@ private fun SidebarRow(
     onClick: () -> Unit = {},
 ) {
     var focused by remember { mutableStateOf(false) }
+    val colors = LocalShelfColors.current
     val scale by animateFloatAsState(if (focused) 1.04f else 1f, tween(140), label = "sidebarRow")
     val shape = RoundedCornerShape(12.dp)
-    val color = if (focused) Ink else Color.White
+    val color = if (focused) colors.focusText else colors.text
     Row(
         (if (focus != null) Modifier.focusRequester(focus) else Modifier)
             .fillMaxWidth()
@@ -307,7 +304,7 @@ private fun SidebarRow(
             }
             .onFocusChanged { focused = it.isFocused }
             .tvClickable(onClick = onClick)
-            .background(if (focused) Color.White else Color.Transparent, shape)
+            .background(if (focused) colors.focusFill else Color.Transparent, shape)
             .padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -316,7 +313,7 @@ private fun SidebarRow(
             Box(
                 Modifier
                     .size(30.dp)
-                    .background(if (focused) Ink.copy(alpha = 0.08f) else Color.White.copy(alpha = 0.16f), CircleShape),
+                    .background(if (focused) colors.focusText.copy(alpha = 0.1f) else colors.badge, CircleShape),
                 contentAlignment = Alignment.Center,
             ) {
                 Image(
@@ -362,7 +359,7 @@ private fun SidebarSection(text: String) {
         modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 14.dp, bottom = 4.dp),
         style = TextStyle(
             fontFamily = ShelfFont,
-            color = Color.White.copy(alpha = 0.55f),
+            color = LocalShelfColors.current.subText,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
         ),
@@ -393,11 +390,11 @@ private fun SidebarHeader(page: SettingsPage, clock: ClockMode) {
             BasicText(
                 text = stringResource(R.string.app_name),
                 modifier = Modifier.weight(1f),
-                style = TextStyle(fontFamily = ShelfFont, color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.SemiBold),
+                style = TextStyle(fontFamily = ShelfFont, color = LocalShelfColors.current.text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold),
             )
             BasicText(
                 text = time,
-                style = TextStyle(fontFamily = ShelfFont, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp),
+                style = TextStyle(fontFamily = ShelfFont, color = LocalShelfColors.current.subText, fontSize = 14.sp),
             )
         } else {
             Image(
@@ -406,14 +403,14 @@ private fun SidebarHeader(page: SettingsPage, clock: ClockMode) {
                 modifier = Modifier
                     .size(24.dp)
                     .graphicsLayer { rotationZ = 180f }, // points back
-                colorFilter = ColorFilter.tint(Color.White.copy(alpha = 0.7f)),
+                colorFilter = ColorFilter.tint(LocalShelfColors.current.subText),
             )
             BasicText(
                 text = stringResource(page.title),
                 modifier = Modifier.weight(1f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = TextStyle(fontFamily = ShelfFont, color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold),
+                style = TextStyle(fontFamily = ShelfFont, color = LocalShelfColors.current.text, fontSize = 20.sp, fontWeight = FontWeight.Bold),
             )
         }
     }
@@ -485,14 +482,12 @@ fun SettingsPanel(
                 enter = fadeIn(tween(200)) + slideInHorizontally(tween(300)) { w -> if (rtl) w / 3 else -w / 3 },
             ) {
                 val shape = RoundedCornerShape(30.dp)
-                val top = Color(0xF02C313B)
-                val bottom = Color(0xF31A1D24)
                 Box(
                     Modifier
                         .padding(start = 28.dp, top = 28.dp, bottom = 28.dp)
                         .width(360.dp)
                         .fillMaxHeight()
-                        .frostedGlass(frost = frost, shape = shape, fallback = Brush.verticalGradient(listOf(top, bottom)))
+                        .frostedGlass(frost = frost, shape = shape)
                         .padding(horizontal = 12.dp, vertical = 14.dp)
                 ) {
                     AnimatedContent(
@@ -589,7 +584,12 @@ private fun AppearancePage(
     LaunchedEffect(Unit) { first.requestWithRetry() }
     SidebarList {
         item {
-            SidebarRow(stringResource(R.string.apps_per_row), first, value = "${prefs.columns}") {
+            SidebarRow(stringResource(R.string.theme), first, value = stringResource(prefs.theme.label)) {
+                onChange { it.copy(theme = it.theme.next()) }
+            }
+        }
+        item {
+            SidebarRow(stringResource(R.string.apps_per_row), value = "${prefs.columns}") {
                 onChange { it.copy(columns = if (it.columns >= 7) 5 else it.columns + 1) }
             }
         }

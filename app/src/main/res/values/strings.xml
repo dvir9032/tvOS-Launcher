@@ -80,4 +80,41 @@
     <string name="about_text">A tvOS-inspired home screen for Android TV.</string>
     <string name="source_code">Source code</string>
     <string name="font">Font</string>
+
+    <!-- Themes -->
+    <string name="theme">Theme</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_auto">Auto</string>
+
+    <!-- Folders -->
+    <string name="folder_games">Games</string>
+    <string name="folder_movies">Movies &amp; TV</string>
+    <string name="folder_music">Music</string>
+    <string name="folder_kids">Kids</string>
+    <string name="folder_tools">Tools</string>
+    <string name="add_to_folder">Add to folder</string>
+    <string name="remove_from_folder">Remove from folder</string>
+    <string name="rename">Rename</string>
+    <string name="ungroup">Remove folder</string>
+    <string name="folder_name">Folder name</string>
+    <string name="done">Done</string>
+    <string name="recent">Recent</string>
+
+    <!-- Control Center -->
+    <string name="control_center">Control Center</string>
+    <string name="inputs">Inputs</string>
+    <string name="sound">Sound</string>
+    <string name="muted">Muted</string>
+    <string name="sleep_timer">Sleep timer</string>
+    <string name="minutes">%1$d min</string>
+    <string name="picture">Picture</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="offline">Offline</string>
+    <string name="screen_off">Screen off</string>
+    <string name="power">Power</string>
+    <string name="volume">Volume</string>
+    <string name="needs_home_service">Turn on \"Shelf – Home button\" first</string>
+    <string name="admin_explain">Lets Shelf turn the screen off from Control Center and with the sleep timer. Shelf can\'t do anything else with this.</string>
 </resources>

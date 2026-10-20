@@ -48,10 +48,26 @@ import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import kotlinx.coroutines.delay
 import androidx.compose.foundation.layout.height
+import android.widget.Toast
+import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.produceState
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.shelf.launcher.data.FOLDER_PREFIX
+import com.shelf.launcher.data.FolderPreset
+import com.shelf.launcher.data.ThemeMode
+import com.shelf.launcher.data.buildDock
+import com.shelf.launcher.data.folderName
+import com.shelf.launcher.data.next
+import com.shelf.launcher.home.TvPower
+import java.util.Calendar
 import com.shelf.launcher.LauncherViewModel
 import com.shelf.launcher.data.SOURCE_PREFIX
 import com.shelf.launcher.data.TvApp
-import com.shelf.launcher.data.arrange
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -74,9 +90,30 @@ private val MinimalBringIntoView = object : BringIntoViewSpec {
  *
  * All sizes are fractions of the screen so it looks the same on any TV density.
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShelfHome(vm: LauncherViewModel, onAllowContent: () -> Unit) {
+    val prefs by vm.prefs.collectAsState()
+    // Auto theme: dark from 7 pm to 6 am, checked every minute.
+    val hour by produceState(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
+        while (true) {
+            delay(60_000)
+            value = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        }
+    }
+    val dark = when (prefs.theme) {
+        ThemeMode.DARK -> true
+        ThemeMode.LIGHT -> false
+        ThemeMode.AUTO -> hour >= 19 || hour < 6
+    }
+    CompositionLocalProvider(LocalShelfColors provides if (dark) DarkColors else LightColors) {
+        ShelfHomeContent(vm, onAllowContent)
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) {
+    val context = LocalContext.current
     val allApps by vm.apps.collectAsState()
     val prefs by vm.prefs.collectAsState()
     val sources by vm.sources.collectAsState()
@@ -86,16 +123,19 @@ fun ShelfHome(vm: LauncherViewModel, onAllowContent: () -> Unit) {
     val homeServiceOn by vm.homeServiceOn.collectAsState()
     val content by vm.content.collectAsState()
     val contentAllowed by vm.contentAllowed.collectAsState()
+    val controls by vm.controls.collectAsState()
 
     val columns = prefs.columns
-    val arranged = remember(allApps, prefs.order) { arrange(allApps, prefs.order) }
+    val arranged = remember(allApps, prefs) { buildDock(context, allApps, prefs) }
     val visible = remember(arranged, prefs.hidden) { arranged.filter { it.key !in prefs.hidden } }
     val hiddenApps = remember(arranged, prefs.hidden) { arranged.filter { it.key in prefs.hidden } }
     val shownSources = if (prefs.showInputs) sources else emptyList()
     val rows = remember(visible, columns) { visible.chunked(columns) }
+    val dockKeys = visible.map { it.key }
+    val recentApps = remember(allApps, prefs.recent) { prefs.recent.mapNotNull { k -> allApps.firstOrNull { it.key == k } } }
 
     var focusedKey by rememberSaveable { mutableStateOf<String?>(null) }
-    val focusedApp = visible.firstOrNull { it.key == focusedKey }
+    val focusedApp = visible.firstOrNull { it.key == focusedKey } ?: allApps.firstOrNull { it.key == focusedKey }
     val focusedSource = shownSources.firstOrNull { SOURCE_PREFIX + it.id == focusedKey }
     val title = focusedApp?.label ?: focusedSource?.label ?: visible.firstOrNull()?.label.orEmpty()
     val backdropApp = if (focusedSource != null) null else (focusedApp ?: visible.firstOrNull())
@@ -104,7 +144,7 @@ fun ShelfHome(vm: LauncherViewModel, onAllowContent: () -> Unit) {
     // the TV home screen). The big picture rotates until a content card is focused.
     var ownerKey by rememberSaveable { mutableStateOf<String?>(null) }
     var focusedItemId by remember { mutableStateOf<Long?>(null) }
-    val owner = visible.firstOrNull { it.key == ownerKey } ?: visible.firstOrNull()
+    val owner = visible.firstOrNull { it.key == ownerKey } ?: allApps.firstOrNull { it.key == ownerKey } ?: visible.firstOrNull()
     val shelfItems = if (prefs.showContent) owner?.packageName?.let { content[it] }.orEmpty() else emptyList()
     var heroIndex by remember(owner?.key) { mutableIntStateOf(0) }
     LaunchedEffect(owner?.key, shelfItems.size, focusedItemId) {
@@ -118,8 +158,20 @@ fun ShelfHome(vm: LauncherViewModel, onAllowContent: () -> Unit) {
         shelfItems.firstOrNull { it.id == focusedItemId } ?: shelfItems.getOrNull(heroIndex % shelfItems.size.coerceAtLeast(1))
 
     var menuFor by remember { mutableStateOf<TvApp?>(null) }
+    var menuFromRecent by remember { mutableStateOf(false) }
     var movingKey by remember { mutableStateOf<String?>(null) }
     var settingsOpen by remember { mutableStateOf(false) }
+    var controlCenterOpen by remember { mutableStateOf(false) }
+    var inputsOpen by remember { mutableStateOf(false) }
+    var openFolderKey by remember { mutableStateOf<String?>(null) }
+    var folderPickFor by remember { mutableStateOf<TvApp?>(null) }
+    var renameFolderKey by remember { mutableStateOf<String?>(null) }
+    var folderAppMenu by remember { mutableStateOf<TvApp?>(null) }
+    var ccBounds by remember { mutableStateOf<Rect?>(null) }
+    var inputsBounds by remember { mutableStateOf<Rect?>(null) }
+    val openFolder = visible.firstOrNull { it.key == openFolderKey && it.isFolder }
+
+    fun toast(@StringRes text: Int) = Toast.makeText(context, text, Toast.LENGTH_LONG).show()
 
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -180,7 +232,8 @@ fun ShelfHome(vm: LauncherViewModel, onAllowContent: () -> Unit) {
     // The home screen is drawn into a layer, so menus can show a blurred copy of it.
     val homeLayer = rememberGraphicsLayer()
     var frost by remember { mutableStateOf<Frost?>(null) }
-    val menuOpen = settingsOpen || menuFor != null
+    val menuOpen = settingsOpen || menuFor != null || controlCenterOpen || inputsOpen ||
+        openFolderKey != null || folderPickFor != null || renameFolderKey != null || folderAppMenu != null
     LaunchedEffect(menuOpen, prefs, visible, shownSources) {
         if (!menuOpen) {
             frost = null
@@ -273,7 +326,23 @@ fun ShelfHome(vm: LauncherViewModel, onAllowContent: () -> Unit) {
             }
             UpdatePill(state = update, onClick = vm::installUpdate)
             ClockPill(mode = prefs.clock)
-            GlassIconButton(onClick = { settingsOpen = true }) { focused -> SettingsGlyph(focused) }
+            if (sources.isNotEmpty()) {
+                GlassIconButton(
+                    icon = R.drawable.ic_input,
+                    description = stringResource(R.string.inputs),
+                    onClick = { inputsOpen = true },
+                    modifier = Modifier.onGloballyPositioned { inputsBounds = it.boundsInRoot() },
+                )
+            }
+            GlassIconButton(
+                icon = R.drawable.ic_sliders,
+                description = stringResource(R.string.control_center),
+                onClick = {
+                    vm.refreshControls()
+                    controlCenterOpen = true
+                },
+                modifier = Modifier.onGloballyPositioned { ccBounds = it.boundsInRoot() },
+            )
         }
 
         val appRow: @Composable (List<TvApp>) -> Unit = { row ->
@@ -293,8 +362,17 @@ fun ShelfHome(vm: LauncherViewModel, onAllowContent: () -> Unit) {
                                 ownerKey = app.key
                                 focusedItemId = null
                             },
-                            onClick = { if (movingKey == null) vm.launch(app) },
-                            onLongClick = { if (movingKey == null) menuFor = app },
+                            onClick = {
+                                if (movingKey == null) {
+                                    if (app.isFolder) openFolderKey = app.key else vm.launch(app)
+                                }
+                            },
+                            onLongClick = {
+                                if (movingKey == null) {
+                                    menuFromRecent = false
+                                    menuFor = app
+                                }
+                            },
                             onMove = ::move,
                             onMoveDone = {
                                 movingKey = null
@@ -385,6 +463,52 @@ fun ShelfHome(vm: LauncherViewModel, onAllowContent: () -> Unit) {
                 itemsIndexed(rows.drop(1), key = { index, _ -> "row_$index" }) { _, row ->
                     Box(Modifier.padding(horizontal = sidePad + trayPadH)) { appRow(row) }
                 }
+                if (recentApps.isNotEmpty()) {
+                    item(key = "recent") {
+                        Column(
+                            modifier = Modifier.padding(horizontal = sidePad + trayPadH),
+                            verticalArrangement = Arrangement.spacedBy(10.dp),
+                        ) {
+                            BasicText(
+                                text = stringResource(R.string.recent),
+                                style = TextStyle(
+                                    fontFamily = ShelfFont,
+                                    color = Color.White.copy(alpha = 0.75f),
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                ),
+                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(gap)) {
+                                recentApps.take(columns).forEach { app ->
+                                    key("recent_" + app.key) {
+                                        val recentKey = "recent:" + app.key
+                                        AppTile(
+                                            app = app,
+                                            width = tileW,
+                                            height = tileH,
+                                            moving = false,
+                                            modifier = Modifier
+                                                .focusRequester(requesterFor(recentKey))
+                                                .onGloballyPositioned { tileBounds[recentKey] = it.boundsInRoot() },
+                                            onFocused = {
+                                                focusedKey = app.key
+                                                ownerKey = app.key
+                                                focusedItemId = null
+                                            },
+                                            onClick = { vm.launch(app) },
+                                            onLongClick = {
+                                                menuFromRecent = true
+                                                menuFor = app
+                                            },
+                                            onMove = {},
+                                            onMoveDone = {},
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -404,50 +528,223 @@ fun ShelfHome(vm: LauncherViewModel, onAllowContent: () -> Unit) {
             menuFor = null
         }
         val pkg = app.packageName
+        val tileKey = if (menuFromRecent) "recent:" + app.key else app.key
         val actions = buildList {
-            add(MenuAction(R.string.menu_open, R.drawable.ic_open) {
+            add(MenuAction(stringResource(R.string.menu_open), R.drawable.ic_open) {
                 close()
-                vm.launch(app)
+                if (app.isFolder) openFolderKey = app.key else vm.launch(app)
             })
-            add(MenuAction(R.string.menu_move, R.drawable.ic_move) {
-                close()
-                movingKey = app.key
-                focusOn(app.key)
-            })
-            if (visible.firstOrNull()?.key != app.key) {
-                add(MenuAction(R.string.menu_move_first, R.drawable.ic_first) {
+            if (!menuFromRecent) {
+                add(MenuAction(stringResource(R.string.menu_move), R.drawable.ic_move) {
                     close()
-                    reorder(app.key, 0)
-                })
-            }
-            add(MenuAction(R.string.menu_hide, R.drawable.ic_hide) {
-                close()
-                vm.hide(app.key)
-                focusOn(visible.firstOrNull { it.key != app.key }?.key)
-            })
-            if (pkg != null) {
-                add(MenuAction(R.string.menu_app_info, R.drawable.ic_info) {
-                    close()
+                    movingKey = app.key
                     focusOn(app.key)
+                })
+                if (visible.firstOrNull()?.key != app.key) {
+                    add(MenuAction(stringResource(R.string.menu_move_first), R.drawable.ic_first) {
+                        close()
+                        reorder(app.key, 0)
+                    })
+                }
+            }
+            if (app.isFolder) {
+                add(MenuAction(stringResource(R.string.rename), R.drawable.ic_rename) {
+                    close()
+                    renameFolderKey = app.key
+                })
+                add(MenuAction(stringResource(R.string.ungroup), R.drawable.ic_remove) {
+                    close()
+                    vm.ungroup(app.key.removePrefix(FOLDER_PREFIX), dockKeys)
+                    focusOn(app.children.firstOrNull()?.key)
+                })
+            } else if (!menuFromRecent) {
+                add(MenuAction(stringResource(R.string.menu_hide), R.drawable.ic_hide) {
+                    close()
+                    vm.hide(app.key)
+                    focusOn(visible.firstOrNull { it.key != app.key }?.key)
+                })
+                if (pkg != null) {
+                    add(MenuAction(stringResource(R.string.add_to_folder), R.drawable.ic_folder) {
+                        close()
+                        folderPickFor = app
+                    })
+                }
+            }
+            if (pkg != null) {
+                add(MenuAction(stringResource(R.string.menu_app_info), R.drawable.ic_info) {
+                    close()
+                    focusOn(tileKey)
                     vm.openAppInfo(pkg)
                 })
             }
             if (pkg != null && app.canUninstall) {
-                add(MenuAction(R.string.menu_uninstall, R.drawable.ic_delete) {
+                add(MenuAction(stringResource(R.string.menu_uninstall), R.drawable.ic_delete) {
                     close()
-                    focusOn(app.key)
+                    focusOn(tileKey)
                     vm.uninstall(pkg)
                 })
             }
         }
         ActionMenu(
             title = app.label,
-            anchor = tileBounds[app.key],
+            anchor = tileBounds[tileKey],
             actions = actions,
             frost = frost,
             onDismiss = {
                 close()
+                focusOn(tileKey)
+            },
+        )
+    }
+
+    // "Add to folder": existing folders first, then the ready-made ones not used yet.
+    folderPickFor?.let { app ->
+        val existing = prefs.folders.keys.toList()
+        val choices = existing + FolderPreset.entries.map { it.id }.filter { it !in existing }
+        ActionMenu(
+            title = stringResource(R.string.add_to_folder),
+            anchor = tileBounds[app.key],
+            actions = choices.map { id ->
+                MenuAction(folderName(context, id, prefs.folderNames), R.drawable.ic_folder) {
+                    folderPickFor = null
+                    vm.addToFolder(app.key, id, dockKeys)
+                    focusOn(FOLDER_PREFIX + id)
+                }
+            },
+            frost = frost,
+            onDismiss = {
+                folderPickFor = null
                 focusOn(app.key)
+            },
+        )
+    }
+
+    openFolder?.let { folder ->
+        FolderPanel(
+            folder = folder,
+            frost = frost,
+            onLaunch = {
+                openFolderKey = null
+                vm.launch(it)
+            },
+            onLongClick = { folderAppMenu = it },
+            onDismiss = {
+                openFolderKey = null
+                focusOn(folder.key)
+            },
+        )
+    }
+    // The folder emptied out (last app removed): close it.
+    LaunchedEffect(openFolderKey, openFolder) {
+        if (openFolderKey != null && openFolder == null) openFolderKey = null
+    }
+
+    folderAppMenu?.let { app ->
+        val pkg = app.packageName
+        ActionMenu(
+            title = app.label,
+            anchor = null,
+            actions = buildList {
+                add(MenuAction(stringResource(R.string.menu_open), R.drawable.ic_open) {
+                    folderAppMenu = null
+                    openFolderKey = null
+                    vm.launch(app)
+                })
+                add(MenuAction(stringResource(R.string.remove_from_folder), R.drawable.ic_remove) {
+                    folderAppMenu = null
+                    vm.removeFromFolder(app.key, dockKeys)
+                })
+                if (pkg != null) {
+                    add(MenuAction(stringResource(R.string.menu_app_info), R.drawable.ic_info) {
+                        folderAppMenu = null
+                        vm.openAppInfo(pkg)
+                    })
+                }
+                if (pkg != null && app.canUninstall) {
+                    add(MenuAction(stringResource(R.string.menu_uninstall), R.drawable.ic_delete) {
+                        folderAppMenu = null
+                        vm.uninstall(pkg)
+                    })
+                }
+            },
+            frost = frost,
+            onDismiss = { folderAppMenu = null },
+        )
+    }
+
+    renameFolderKey?.let { key ->
+        val folder = visible.firstOrNull { it.key == key }
+        RenameDialog(
+            current = folder?.label.orEmpty(),
+            frost = frost,
+            onSave = { name ->
+                renameFolderKey = null
+                vm.renameFolder(key.removePrefix(FOLDER_PREFIX), name)
+                focusOn(key)
+            },
+            onDismiss = {
+                renameFolderKey = null
+                focusOn(key)
+            },
+        )
+    }
+
+    if (controlCenterOpen) {
+        ControlCenter(
+            anchor = ccBounds,
+            frost = frost,
+            controls = controls,
+            theme = prefs.theme,
+            onMute = vm::toggleMute,
+            onVolume = vm::changeVolume,
+            onTheme = { vm.updatePrefs { it.copy(theme = it.theme.next()) } },
+            onSleep = { if (!vm.cycleSleepTimer()) runCatching { context.startActivity(TvPower.allowIntent(context)) } },
+            onPicture = {
+                controlCenterOpen = false
+                vm.openPictureSettings()
+            },
+            onSettings = {
+                controlCenterOpen = false
+                settingsOpen = true
+            },
+            onTvSettings = {
+                controlCenterOpen = false
+                vm.openSystemSettings()
+            },
+            onWifi = {
+                controlCenterOpen = false
+                vm.openWifiSettings()
+            },
+            onScreenOff = {
+                if (vm.canTurnOff()) {
+                    controlCenterOpen = false
+                    vm.screenOff()
+                } else {
+                    runCatching { context.startActivity(TvPower.allowIntent(context)) }
+                }
+            },
+            onPower = {
+                if (vm.powerMenu()) controlCenterOpen = false else toast(R.string.needs_home_service)
+            },
+            onDismiss = {
+                controlCenterOpen = false
+                focusOn(focusedKey ?: visible.firstOrNull()?.key)
+            },
+        )
+    }
+
+    if (inputsOpen) {
+        InputsPanel(
+            anchor = inputsBounds,
+            frost = frost,
+            sources = sources,
+            onPick = {
+                inputsOpen = false
+                vm.launchSource(it)
+            },
+            onDismiss = {
+                inputsOpen = false
+                focusOn(focusedKey ?: visible.firstOrNull()?.key)
             },
         )
     }
@@ -481,12 +778,18 @@ fun ShelfHome(vm: LauncherViewModel, onAllowContent: () -> Unit) {
         if (visible.isNotEmpty()) {
             menuFor = null
             settingsOpen = false
+            controlCenterOpen = false
+            inputsOpen = false
+            openFolderKey = null
+            folderPickFor = null
+            renameFolderKey = null
+            folderAppMenu = null
             backToTop()
         }
     }
 
     // A launcher has nowhere to go "back" to: jump to the top instead.
-    BackHandler(enabled = movingKey == null && menuFor == null && !settingsOpen) {
+    BackHandler(enabled = movingKey == null && !menuOpen) {
         backToTop()
     }
 }

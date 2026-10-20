@@ -107,22 +107,22 @@ private fun blurLine(src: IntArray, dst: IntArray, w: Int, h: Int, r: Int, horiz
 
 /**
  * Frosted glass: shows the blurred screen behind this element, lined up with
- * where the element sits, darkened a little so white text stays readable.
- * Until the blur is ready (or if it fails) it shows [fallback].
+ * where the element sits, darkened (dark theme) or lightened (light theme) so
+ * text stays readable. Until the blur is ready (or if it fails) it shows a plain
+ * panel color.
  */
 fun Modifier.frostedGlass(
     frost: Frost?,
     shape: Shape,
-    fallback: Brush,
-    dim: Float = 0.3f,
 ): Modifier = composed {
+    val colors = LocalShelfColors.current
     var origin by remember { mutableStateOf(Offset.Zero) }
     val reveal by animateFloatAsState(if (frost != null) 1f else 0f, tween(220), label = "frost")
     this
         .onGloballyPositioned { origin = it.positionInRoot() }
         .shadow(28.dp, shape, clip = false)
         .clip(shape)
-        .background(fallback)
+        .background(colors.panelFallback)
         .drawBehind {
             if (frost != null && reveal > 0f) {
                 drawImage(
@@ -134,15 +134,11 @@ fun Modifier.frostedGlass(
                     alpha = reveal,
                     filterQuality = FilterQuality.Low, // bilinear: smooth when scaled up
                 )
-                drawRect(Color.Black.copy(alpha = dim * reveal))
+                drawRect(colors.frostOverlay.copy(alpha = colors.frostOverlay.alpha * reveal))
                 drawRect(
                     Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.10f * reveal), Color.Transparent))
                 )
             }
         }
-        .border(
-            width = 1.dp,
-            brush = Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.42f), Color.White.copy(alpha = 0.06f))),
-            shape = shape,
-        )
+        .border(width = 1.dp, brush = colors.rim, shape = shape)
 }

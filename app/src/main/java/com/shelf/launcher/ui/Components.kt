@@ -1,6 +1,7 @@
 package com.shelf.launcher.ui
 
 import android.text.format.DateFormat
+import androidx.annotation.DrawableRes
 import android.view.KeyEvent as AndroidKeyEvent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.RepeatMode
@@ -56,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.shelf.launcher.R
+import androidx.compose.foundation.layout.fillMaxHeight
 import com.shelf.launcher.data.rememberArt
 import com.shelf.launcher.data.ShelfItem
 import androidx.compose.foundation.layout.Spacer
@@ -189,10 +191,11 @@ fun ClockPill(mode: ClockMode, modifier: Modifier = Modifier) {
             delay(secondsLeft.coerceAtLeast(1) * 1000L)
         }
     }
+    val colors = LocalShelfColors.current
     Row(
         modifier = modifier
             .height(36.dp)
-            .background(Color.White.copy(alpha = 0.16f), CircleShape)
+            .background(colors.pill, CircleShape)
             .border(1.dp, Color.White.copy(alpha = 0.22f), CircleShape)
             .padding(start = 14.dp, end = 7.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -200,7 +203,7 @@ fun ClockPill(mode: ClockMode, modifier: Modifier = Modifier) {
     ) {
         BasicText(
             text = now,
-            style = TextStyle(fontFamily = ShelfFont, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold),
+            style = TextStyle(fontFamily = ShelfFont, color = colors.pillText, fontSize = 14.sp, fontWeight = FontWeight.SemiBold),
         )
         Box(
             Modifier
@@ -212,13 +215,15 @@ fun ClockPill(mode: ClockMode, modifier: Modifier = Modifier) {
     }
 }
 
-/** Round frosted button for the top bar; turns white when focused. */
+/** Round frosted button for the top bar; takes the focus color when focused. */
 @Composable
 fun GlassIconButton(
+    @DrawableRes icon: Int,
+    description: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable (focused: Boolean) -> Unit,
 ) {
+    val colors = LocalShelfColors.current
     var focused by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(if (focused) 1.15f else 1f, tween(150), label = "iconButton")
     Box(
@@ -230,22 +235,17 @@ fun GlassIconButton(
             }
             .onFocusChanged { focused = it.isFocused }
             .tvClickable(onClick = onClick)
-            .background(if (focused) Color.White else Color.White.copy(alpha = 0.16f), CircleShape)
+            .background(if (focused) colors.focusFill else colors.pill, CircleShape)
             .border(1.dp, Color.White.copy(alpha = 0.22f), CircleShape),
         contentAlignment = Alignment.Center,
     ) {
-        content(focused)
+        Image(
+            painter = painterResource(icon),
+            contentDescription = description,
+            modifier = Modifier.size(19.dp),
+            colorFilter = ColorFilter.tint(if (focused) colors.focusText else colors.pillText),
+        )
     }
-}
-
-@Composable
-fun SettingsGlyph(focused: Boolean) {
-    Image(
-        painter = painterResource(R.drawable.ic_settings),
-        contentDescription = stringResource(R.string.settings),
-        modifier = Modifier.size(20.dp),
-        colorFilter = ColorFilter.tint(if (focused) Ink else Color.White),
-    )
 }
 
 /** "Update available" pill. Only shown while there is something to say. */
@@ -310,7 +310,7 @@ fun GlassTray(
     Box(
         modifier
             .fillMaxWidth()
-            .background(Color.White.copy(alpha = glassAlpha), shape)
+            .background(Color.White.copy(alpha = (glassAlpha * LocalShelfColors.current.dockBoost).coerceAtMost(0.6f)), shape)
             .border(
                 width = 1.dp,
                 brush = Brush.verticalGradient(
@@ -399,6 +399,7 @@ fun AppTile(
             .background(Brush.verticalGradient(listOf(app.tint, app.tintDark)))
     ) {
         when {
+            app.isFolder -> FolderCollage(app.children, Modifier.fillMaxSize())
             app.banner != null -> Image(
                 bitmap = app.banner,
                 contentDescription = app.label,
@@ -641,5 +642,52 @@ fun ContentCard(
                     shape = shape,
                 )
         )
+    }
+}
+
+/** A folder tile: up to four of the apps inside, as small tiles. */
+@Composable
+fun FolderCollage(apps: List<TvApp>, modifier: Modifier = Modifier) {
+    Box(
+        modifier
+            .background(Color.White.copy(alpha = 0.10f))
+            .padding(8.dp)
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            for (row in 0 until 2) {
+                Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    for (col in 0 until 2) {
+                        val app = apps.getOrNull(row * 2 + col)
+                        Box(
+                            Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(
+                                    if (app != null) Brush.verticalGradient(listOf(app.tint, app.tintDark))
+                                    else Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.06f), Color.White.copy(alpha = 0.06f)))
+                                )
+                        ) {
+                            when {
+                                app?.banner != null -> Image(
+                                    bitmap = app.banner,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                                app?.icon != null -> Image(
+                                    bitmap = app.icon,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier
+                                        .fillMaxSize(0.6f)
+                                        .align(Alignment.Center),
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

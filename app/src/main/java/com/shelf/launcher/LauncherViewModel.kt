@@ -1,7 +1,11 @@
 package com.shelf.launcher
 
 import android.app.Application
+import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.provider.Settings
 import androidx.lifecycle.AndroidViewModel
@@ -14,7 +18,9 @@ import com.shelf.launcher.data.Prefs
 import com.shelf.launcher.data.ShelfPrefs
 import com.shelf.launcher.data.TvApp
 import com.shelf.launcher.data.TvSource
+import com.shelf.launcher.data.FOLDER_PREFIX
 import com.shelf.launcher.home.HomeButtonService
+import com.shelf.launcher.home.TvPower
 import com.shelf.launcher.update.UpdateState
 import com.shelf.launcher.update.Updater
 import kotlinx.coroutines.Dispatchers
@@ -63,6 +69,22 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     val homeServiceOn: StateFlow<Boolean> = _homeServiceOn.asStateFlow()
 
     val versionName: String = BuildConfig.VERSION_NAME
+
+    /** Everything Control Center shows. Re-read when it opens. */
+    data class Controls(
+        val volume: Int = 0,
+        val maxVolume: Int = 100,
+        val muted: Boolean = false,
+        val network: Network = Network.UNKNOWN,
+        val sleepMinutes: Int = 0,
+    )
+
+    enum class Network { WIFI, ETHERNET, OFFLINE, UNKNOWN }
+
+    private val _controls = MutableStateFlow(Controls())
+    val controls: StateFlow<Controls> = _controls.asStateFlow()
+
+    private val audio = app.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
     private var loadJob: Job? = null
     private var lastUpdateCheck = 0L
@@ -138,6 +160,9 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     fun resetOrder() = prefsStore.update { it.copy(order = emptyList()) }
 
     fun launch(app: TvApp) {
+        if (!app.isFolder && app.packageName != null) {
+            prefsStore.update { p -> p.copy(recent = (listOf(app.key) + (p.recent - app.key)).take(RECENT_MAX)) }
+        }
         HomeButtonService.stayQuiet()
         runCatching { getApplication<Application>().startActivity(app.intent) }
     }
@@ -184,6 +209,129 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
         if (!opened) openSystemSettings()
     }
 
+    // ---------------------------------------------------------------- Control Center
+
+    fun refreshControls() {
+        val app = getApplication<Application>()
+        _controls.value = Controls(
+            volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC),
+            maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC).coerceAtLeast(1),
+            muted = runCatching { audio.isStreamMute(AudioManager.STREAM_MUSIC) }.getOrDefault(false),
+            network = network(app),
+            sleepMinutes = TvPower.sleepMinutesLeft(app),
+        )
+    }
+
+    private fun network(app: Application): Network = runCatching {
+        val cm = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return Network.OFFLINE
+        when {
+            caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> Network.ETHERNET
+            caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> Network.WIFI
+            else -> Network.UNKNOWN
+        }
+    }.getOrDefault(Network.UNKNOWN)
+
+    fun changeVolume(step: Int) {
+        val c = _controls.value
+        val next = (c.volume + step).coerceIn(0, c.maxVolume)
+        runCatching {
+            if (c.muted) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0)
+            audio.setStreamVolume(AudioManager.STREAM_MUSIC, next, 0)
+        }
+        refreshControls()
+    }
+
+    fun toggleMute() {
+        runCatching { audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, 0) }
+        refreshControls()
+    }
+
+    /** Next sleep timer choice. Returns false if Shelf isn't allowed to turn the screen off yet. */
+    fun cycleSleepTimer(): Boolean {
+        val app = getApplication<Application>()
+        if (!TvPower.canTurnOff(app)) return false
+        val current = TvPower.sleepMinutesLeft(app)
+        val choices = TvPower.SLEEP_CHOICES
+        val next = choices.firstOrNull { it > current } ?: 0
+        TvPower.setSleepTimer(app, next)
+        refreshControls()
+        return true
+    }
+
+    /** False if Shelf isn't allowed to turn the screen off yet. */
+    fun screenOff(): Boolean = TvPower.screenOff(getApplication())
+
+    fun canTurnOff(): Boolean = TvPower.canTurnOff(getApplication())
+
+    /** False when the Home button service is off (it's what opens the power menu). */
+    fun powerMenu(): Boolean = TvPower.powerMenu()
+
+    fun openPictureSettings() = openSettings(Settings.ACTION_DISPLAY_SETTINGS)
+
+    fun openWifiSettings() = openSettings(Settings.ACTION_WIFI_SETTINGS)
+
+    private fun openSettings(action: String) {
+        val app = getApplication<Application>()
+        val ok = runCatching { app.startActivity(Intent(action).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }.isSuccess
+        if (!ok) openSystemSettings()
+    }
+
+    // ---------------------------------------------------------------- Folders
+
+    /** Puts [appKey] in folder [folderId]. A new folder takes the app's place on the home screen. */
+    fun addToFolder(appKey: String, folderId: String, dockKeys: List<String>) = prefsStore.update { p ->
+        val folders = p.folders.mapValues { it.value - appKey }.filterValues { it.isNotEmpty() }.toMutableMap()
+        folders[folderId] = folders[folderId].orEmpty() + appKey
+        val folderKey = FOLDER_PREFIX + folderId
+        val order = dockKeys.toMutableList()
+        val at = order.indexOf(appKey)
+        when {
+            folderKey !in order && at >= 0 -> order[at] = folderKey
+            folderKey !in order -> order.add(folderKey)
+            at >= 0 -> order.removeAt(at)
+        }
+        p.copy(folders = folders, order = order + p.hidden)
+    }
+
+    /** Takes [appKey] out of its folder; it goes right after the folder (or in its place if it was the last one). */
+    fun removeFromFolder(appKey: String, dockKeys: List<String>) = prefsStore.update { p ->
+        val folderId = p.folders.entries.firstOrNull { appKey in it.value }?.key ?: return@update p
+        val left = p.folders.getValue(folderId) - appKey
+        val folderKey = FOLDER_PREFIX + folderId
+        val order = dockKeys.toMutableList()
+        val at = order.indexOf(folderKey)
+        val folders = p.folders.toMutableMap()
+        if (left.isEmpty()) {
+            folders.remove(folderId)
+            if (at >= 0) order[at] = appKey else order.add(appKey)
+        } else {
+            folders[folderId] = left
+            if (at >= 0) order.add(at + 1, appKey) else order.add(appKey)
+        }
+        p.copy(folders = folders, order = order + p.hidden)
+    }
+
+    /** Puts all apps of the folder back on the home screen, where the folder was. */
+    fun ungroup(folderId: String, dockKeys: List<String>) = prefsStore.update { p ->
+        val apps = p.folders[folderId].orEmpty()
+        val folderKey = FOLDER_PREFIX + folderId
+        val order = dockKeys.toMutableList()
+        val at = order.indexOf(folderKey)
+        if (at >= 0) {
+            order.removeAt(at)
+            order.addAll(at, apps)
+        } else {
+            order.addAll(apps)
+        }
+        p.copy(folders = p.folders - folderId, folderNames = p.folderNames - folderId, order = order + p.hidden)
+    }
+
+    fun renameFolder(folderId: String, name: String) = prefsStore.update { p ->
+        val clean = name.trim()
+        p.copy(folderNames = if (clean.isEmpty()) p.folderNames - folderId else p.folderNames + (folderId to clean))
+    }
+
     fun openSystemSettings() {
         runCatching {
             getApplication<Application>().startActivity(
@@ -194,5 +342,6 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     private companion object {
         const val SIX_HOURS = 6 * 60 * 60 * 1000L
+        const val RECENT_MAX = 8
     }
 }

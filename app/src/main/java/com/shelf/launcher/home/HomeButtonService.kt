@@ -27,15 +27,18 @@ class HomeButtonService : AccessibilityService() {
     override fun onServiceConnected() {
         builtInLaunchers = otherLaunchers(this)
         launcherActivities = otherLauncherActivities(this)
+        instance = this
         running.value = true
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
+        instance = null
         running.value = false
         return super.onUnbind(intent)
     }
 
     override fun onDestroy() {
+        instance = null
         running.value = false
         super.onDestroy()
     }
@@ -69,6 +72,13 @@ class HomeButtonService : AccessibilityService() {
     companion object {
         // Settings apps also register a fallback home screen; never take over those.
         private val NEVER_REPLACE = setOf("com.android.settings", "com.android.tv.settings")
+
+        @Volatile
+        private var instance: HomeButtonService? = null
+
+        /** Opens the TV's power menu (restart, turn off). Needs the service to be on. */
+        fun powerMenu(): Boolean =
+            instance?.performGlobalAction(GLOBAL_ACTION_POWER_DIALOG) ?: false
 
         /** True while the service is switched on and connected; Shelf watches this live. */
         val running = MutableStateFlow(false)

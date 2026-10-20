@@ -78,4 +78,41 @@
     <string name="about_text">מסך בית לאנדרואיד TV בהשראת tvOS.</string>
     <string name="source_code">קוד מקור</string>
     <string name="font">גופן</string>
+
+    <!-- Themes -->
+    <string name="theme">ערכת נושא</string>
+    <string name="theme_dark">כהה</string>
+    <string name="theme_light">בהירה</string>
+    <string name="theme_auto">אוטומטית</string>
+
+    <!-- Folders -->
+    <string name="folder_games">משחקים</string>
+    <string name="folder_movies">סרטים וסדרות</string>
+    <string name="folder_music">מוזיקה</string>
+    <string name="folder_kids">ילדים</string>
+    <string name="folder_tools">כלים</string>
+    <string name="add_to_folder">הוסף לתיקייה</string>
+    <string name="remove_from_folder">הוצא מהתיקייה</string>
+    <string name="rename">שנה שם</string>
+    <string name="ungroup">בטל תיקייה</string>
+    <string name="folder_name">שם התיקייה</string>
+    <string name="done">סיום</string>
+    <string name="recent">אחרונות</string>
+
+    <!-- Control Center -->
+    <string name="control_center">מרכז בקרה</string>
+    <string name="inputs">מקורות</string>
+    <string name="sound">צליל</string>
+    <string name="muted">מושתק</string>
+    <string name="sleep_timer">טיימר שינה</string>
+    <string name="minutes">%1$d דק\'</string>
+    <string name="picture">תמונה</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="ethernet">כבל רשת</string>
+    <string name="offline">לא מחובר</string>
+    <string name="screen_off">כיבוי מסך</string>
+    <string name="power">הפעלה</string>
+    <string name="volume">עוצמה</string>
+    <string name="needs_home_service">צריך קודם להפעיל את \"Shelf – כפתור הבית\"</string>
+    <string name="admin_explain">מאפשר ל־Shelf לכבות את המסך ממרכז הבקרה ועם טיימר השינה. Shelf לא יכול לעשות שום דבר אחר עם ההרשאה הזו.</string>
 </resources>

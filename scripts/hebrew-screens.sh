@@ -36,16 +36,27 @@ adb shell input keyevent --longpress KEYCODE_DPAD_CENTER; shot 02-menu
 press KEYCODE_BACK; sleep 1
 
 press KEYCODE_DPAD_UP; sleep 1
-press KEYCODE_DPAD_CENTER; shot 03-settings
-press KEYCODE_DPAD_CENTER; shot 04-appearance
+press KEYCODE_DPAD_CENTER; shot 03-control-center
+# Settings is the first round button; in Hebrew it's on the right.
+press KEYCODE_DPAD_DOWN; sleep 1
+press KEYCODE_DPAD_DOWN; sleep 1
+for i in 1 2 3 4 5; do press KEYCODE_DPAD_RIGHT; done; sleep 1
+press KEYCODE_DPAD_CENTER; shot 04-settings
+press KEYCODE_DPAD_CENTER; shot 05-appearance
 press KEYCODE_BACK; sleep 1
 press KEYCODE_DPAD_DOWN; sleep 1
-press KEYCODE_DPAD_CENTER; shot 05-apps
+press KEYCODE_DPAD_CENTER; shot 06-apps
 press KEYCODE_BACK; sleep 1
 press KEYCODE_DPAD_DOWN; sleep 1
-press KEYCODE_DPAD_CENTER; shot 06-home-button
+press KEYCODE_DPAD_CENTER; shot 07-home-button
 press KEYCODE_BACK; sleep 1
-press KEYCODE_DPAD_DOWN; sleep 1
-press KEYCODE_DPAD_CENTER; shot 07-updates
-press KEYCODE_BACK; sleep 1
-press KEYCODE_BACK; shot 08-closed
+press KEYCODE_BACK; sleep 2
+
+# Folders: first app → "Add to folder" (index 3) → first folder
+press KEYCODE_BACK; sleep 2
+adb shell input keyevent --longpress KEYCODE_DPAD_CENTER; sleep 2
+for i in 1 2 3; do press KEYCODE_DPAD_DOWN; sleep 1; done
+press KEYCODE_DPAD_CENTER; shot 08-folder-picker
+press KEYCODE_DPAD_CENTER; sleep 2
+press KEYCODE_DPAD_CENTER; shot 09-folder-open
+press KEYCODE_BACK; shot 10-closed

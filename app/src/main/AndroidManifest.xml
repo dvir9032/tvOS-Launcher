@@ -16,6 +16,8 @@
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <!-- Shows content that apps put on the TV home screen (asked once, can be refused) -->
     <uses-permission android:name="android.permission.READ_TV_LISTINGS" />
+    <!-- Wi-Fi / Ethernet status in Control Center -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- Lets the launcher see other apps (required when targeting Android 11+) -->
     <queries>
@@ -67,6 +69,24 @@
 
         <receiver
             android:name=".update.InstallResultReceiver"
+            android:exported="false" />
+
+        <!-- "Screen off" and the sleep timer (the user allows it once) -->
+        <receiver
+            android:name=".home.ShelfAdmin"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".home.SleepReceiver"
             android:exported="false" />
 
         <!-- Makes the Home button open Shelf on TVs that don't offer a home screen choice -->
