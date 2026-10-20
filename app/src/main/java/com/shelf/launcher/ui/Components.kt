@@ -164,7 +164,7 @@ fun ShelfTitle(text: String, fontSize: Dp, modifier: Modifier = Modifier) {
     )
 }
 
-private fun formatTime(context: android.content.Context, mode: ClockMode): String {
+internal fun formatTime(context: android.content.Context, mode: ClockMode): String {
     val now = Date()
     return when (mode) {
         ClockMode.H24 -> SimpleDateFormat("HH:mm", Locale.getDefault()).format(now)

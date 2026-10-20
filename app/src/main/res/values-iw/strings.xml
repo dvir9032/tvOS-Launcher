@@ -27,6 +27,7 @@
     <string name="settings_updates">עדכונים</string>
     <string name="settings_about">אודות</string>
     <string name="settings_tv">הגדרות הטלוויזיה</string>
+    <string name="settings_system">מערכת</string>
 
     <!-- Appearance -->
     <string name="apps_per_row">אפליקציות בשורה</string>

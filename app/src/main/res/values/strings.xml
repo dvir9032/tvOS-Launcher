@@ -29,6 +29,7 @@
     <string name="settings_updates">Updates</string>
     <string name="settings_about">About</string>
     <string name="settings_tv">TV settings</string>
+    <string name="settings_system">System</string>
 
     <!-- Appearance -->
     <string name="apps_per_row">Apps per row</string>

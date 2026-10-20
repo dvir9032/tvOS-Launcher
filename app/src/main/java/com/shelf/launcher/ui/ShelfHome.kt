@@ -362,6 +362,7 @@ fun ShelfHome(vm: LauncherViewModel) {
             update = update,
             versionName = vm.versionName,
             homeServiceOn = homeServiceOn,
+            tint = backdropApp?.tint ?: Color(0xFF2A3140),
             onHomeSetup = vm::openHomeSetup,
             onChange = vm::updatePrefs,
             onUnhide = vm::unhide,
