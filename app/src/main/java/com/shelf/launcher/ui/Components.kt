@@ -32,6 +32,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.launch
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Animatable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
@@ -366,13 +370,45 @@ fun AppTile(
     }
     val shape = RoundedCornerShape(height * 0.19f)
 
+    // tvOS-style focus motion: the tile arrives with a little swing in the
+    // direction the remote moved, a light sweeps across it once, and when the
+    // remote is left alone the other tiles dim while this one grows a touch.
+    val fx = LocalFocusFx.current
+    val swayX = remember { Animatable(0f) }
+    val swayY = remember { Animatable(0f) }
+    val shine = remember { Animatable(1f) }
+    LaunchedEffect(isFocused) {
+        if (!isFocused || moving) return@LaunchedEffect
+        val fromRemote = fx.movedByRemote()
+        launch {
+            if (fromRemote) swayX.snapTo(-fx.dirX.toFloat())
+            swayX.animateTo(0f, spring(dampingRatio = 0.42f, stiffness = 260f))
+        }
+        launch {
+            if (fromRemote) swayY.snapTo(-fx.dirY.toFloat())
+            swayY.animateTo(0f, spring(dampingRatio = 0.42f, stiffness = 260f))
+        }
+        launch {
+            shine.snapTo(0f)
+            shine.animateTo(1f, tween(800, delayMillis = 60))
+        }
+    }
+
     Box(
         modifier
             .zIndex(if (isFocused || moving) 1f else 0f)
             .size(width, height)
             .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
+                val idle = fx.idle.value
+                val s = scale + if (isFocused) 0.03f * idle else 0f
+                scaleX = s
+                scaleY = s
+                translationX = swayX.value * SWAY_DP.dp.toPx()
+                translationY = swayY.value * SWAY_DP.dp.toPx()
+                // A slight lean toward the move (a few degrees, no perspective cost to speak of)
+                rotationY = swayX.value * 4f
+                rotationX = -swayY.value * 4f
+                cameraDistance = 24f * density
                 shadowElevation = (if (isFocused) 28.dp else 4.dp).toPx()
                 this.shape = shape
                 clip = true
@@ -441,9 +477,32 @@ fun AppTile(
                     color = Color.White.copy(alpha = if (moving) pulse else 0.25f),
                     shape = shape,
                 )
+                .drawBehind {
+                    // One sweep of light across the tile when it gains focus
+                    val p = shine.value
+                    if (isFocused && p < 1f) {
+                        val w = size.width
+                        val x = -w * 0.7f + p * w * 2.1f
+                        drawRect(
+                            Brush.linearGradient(
+                                0f to Color.Transparent,
+                                0.5f to Color.White.copy(alpha = 0.34f),
+                                1f to Color.Transparent,
+                                start = Offset(x, 0f),
+                                end = Offset(x + w * 0.45f, size.height),
+                            )
+                        )
+                    }
+                    // Remote left alone: everything but the focused tile dims
+                    val idle = fx.idle.value
+                    if (!isFocused && idle > 0f) drawRect(Color.Black.copy(alpha = IDLE_DIM * idle))
+                }
         )
     }
 }
+
+private const val SWAY_DP = 5f
+private const val IDLE_DIM = 0.38f
 
 /** An HDMI input: a slim frosted pill under the dock. */
 @Composable

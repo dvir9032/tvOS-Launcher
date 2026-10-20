@@ -589,6 +589,12 @@ private fun AppearancePage(
             }
         }
         item {
+            SidebarRow(
+                stringResource(R.string.focus_sound),
+                value = stringResource(if (prefs.focusSound) R.string.on else R.string.off),
+            ) { onChange { it.copy(focusSound = !it.focusSound) } }
+        }
+        item {
             SidebarRow(stringResource(R.string.apps_per_row), value = "${prefs.columns}") {
                 onChange { it.copy(columns = if (it.columns >= 7) 5 else it.columns + 1) }
             }

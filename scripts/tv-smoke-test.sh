@@ -103,8 +103,10 @@ press KEYCODE_BACK;        sleep 2
 
 # --- Top shelf: content from the focused app (YouTube is the 5th app in the dock) ---
 press KEYCODE_BACK; sleep 2                      # back to the first app
-for i in 1 2 3 4; do press KEYCODE_DPAD_RIGHT; sleep 1; done
-sleep 6; shot 15-youtube-shelf
+for i in 1 2 3; do press KEYCODE_DPAD_RIGHT; sleep 1; done
+press KEYCODE_DPAD_RIGHT; adb exec-out screencap -p > "$OUT/15a-focus-motion.png"   # mid-swing, light sweeping
+sleep 2; shot 15b-youtube-shelf
+sleep 6; shot 15-youtube-shelf-idle   # remote left alone: the other tiles dim
 press KEYCODE_DPAD_UP;    sleep 3; shot 16-content-row
 press KEYCODE_DPAD_RIGHT; sleep 3; shot 17-content-next
 press KEYCODE_DPAD_DOWN;  sleep 1

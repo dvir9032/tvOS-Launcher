@@ -118,4 +118,5 @@
     <string name="volume">Volume</string>
     <string name="needs_home_service">Turn on \"Shelf – Home button\" first</string>
     <string name="admin_explain">Lets Shelf turn the screen off from Control Center and with the sleep timer. Shelf can\'t do anything else with this.</string>
+    <string name="focus_sound">Navigation sound</string>
 </resources>

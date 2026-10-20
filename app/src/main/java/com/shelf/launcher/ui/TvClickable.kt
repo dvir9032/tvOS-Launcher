@@ -6,6 +6,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
@@ -23,7 +25,11 @@ private fun isSelectKey(code: Int) =
 fun Modifier.tvClickable(onLongClick: (() -> Unit)? = null, onClick: () -> Unit): Modifier = composed {
     // [0] = OK went down on this element, [1] = long press already fired
     val press = remember { booleanArrayOf(false, false) }
+    val fx = LocalFocusFx.current
     this
+        // Arrows are seen here first (also inside menus and dialogs), so the
+        // element that gains focus next knows the remote moved it.
+        .onPreviewKeyEvent { fx.onKey(it.nativeKeyEvent); false }
         .onKeyEvent { event ->
             val native = event.nativeKeyEvent
             val code = native.keyCode
@@ -54,6 +60,7 @@ fun Modifier.tvClickable(onLongClick: (() -> Unit)? = null, onClick: () -> Unit)
                 else -> false
             }
         }
+        .onFocusChanged { if (it.isFocused) fx.onFocusMoved() }
         .focusable()
 }
 

@@ -30,6 +30,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
@@ -108,8 +109,14 @@ fun ShelfHome(vm: LauncherViewModel, onAllowContent: () -> Unit) {
         ThemeMode.LIGHT -> false
         ThemeMode.AUTO -> hour >= 19 || hour < 6
     }
-    CompositionLocalProvider(LocalShelfColors provides if (dark) DarkColors else LightColors) {
-        ShelfHomeContent(vm, onAllowContent)
+    val fx = rememberFocusFx(prefs.focusSound)
+    CompositionLocalProvider(
+        LocalShelfColors provides if (dark) DarkColors else LightColors,
+        LocalFocusFx provides fx,
+    ) {
+        Box(Modifier.onPreviewKeyEvent { fx.onKey(it.nativeKeyEvent); false }) {
+            ShelfHomeContent(vm, onAllowContent)
+        }
     }
 }
 
@@ -389,7 +396,8 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
         }
 
         val spacing = h * 0.035f
-        val shelfRowHeight = if (shelfItems.isNotEmpty()) SHELF_DOTS_HEIGHT else 0.dp
+        // Always the same height, so the list never re-anchors when the dots come and go.
+        val shelfRowHeight = SHELF_DOTS_HEIGHT
         val belowAlpha by animateFloatAsState(if (focusZone == 1) 1f else 0f, tween(300), label = "belowDock")
 
         // On TVs Compose scrolls the focused row to ~30% of the screen by default,
@@ -419,7 +427,7 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
                             onOpen = { heroItem?.let(vm::launchItem) },
                         )
                     } else {
-                        Box(Modifier.height(0.dp))
+                        Box(Modifier.height(SHELF_DOTS_HEIGHT))
                     }
                 }
                 rows.firstOrNull()?.let { first ->
