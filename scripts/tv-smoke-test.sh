@@ -56,6 +56,8 @@ press KEYCODE_DPAD_CENTER; sleep 4; shot 7-opened-app
 sleep 3
 if resumed | grep -q "$PKG"; then
   echo "::error title=Opened app was covered::Shelf came back over the app it just opened. $(resumed)"
+  adb logcat -d > "$OUT/full-log.txt" || true
+  grep -E "ShelfHome|ActivityTaskManager: START|stopped" "$OUT/full-log.txt" | tail -40 | tee -a "$LOG"
   exit 1
 fi
 echo "7b-app-still-open :: $(resumed)" | tee -a "$LOG"
