@@ -6,13 +6,15 @@ import androidx.compose.ui.text.font.FontWeight
 import com.shelf.launcher.R
 
 /**
- * Heebo (SIL Open Font License, see docs/FONT-LICENSE-Heebo.txt): one family
- * for Hebrew and Latin, so titles and menus look the same in both languages.
+ * The one typeface used everywhere in Shelf: Assistant (SIL Open Font License,
+ * see docs/FONT-LICENSE-Assistant.txt). It covers Hebrew and Latin, so titles
+ * and menus look the same in both languages. To change fonts, replace the files
+ * in res/font and this list.
  */
-val Heebo = FontFamily(
-    Font(R.font.heebo_regular, FontWeight.Normal),
-    Font(R.font.heebo_medium, FontWeight.Medium),
-    Font(R.font.heebo_semibold, FontWeight.SemiBold),
-    Font(R.font.heebo_bold, FontWeight.Bold),
-    Font(R.font.heebo_extrabold, FontWeight.ExtraBold),
+val ShelfFont = FontFamily(
+    Font(R.font.assistant_regular, FontWeight.Normal),
+    Font(R.font.assistant_medium, FontWeight.Medium),
+    Font(R.font.assistant_semibold, FontWeight.SemiBold),
+    Font(R.font.assistant_bold, FontWeight.Bold),
+    Font(R.font.assistant_extrabold, FontWeight.ExtraBold),
 )

@@ -149,7 +149,7 @@ fun ShelfTitle(text: String, fontSize: Dp, modifier: Modifier = Modifier) {
         modifier = modifier,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
-        style = TextStyle(fontFamily = Heebo, 
+        style = TextStyle(fontFamily = ShelfFont, 
             color = Color.White,
             fontWeight = FontWeight.ExtraBold,
             fontSize = size,
@@ -195,7 +195,7 @@ fun ClockPill(mode: ClockMode, modifier: Modifier = Modifier) {
     ) {
         BasicText(
             text = now,
-            style = TextStyle(fontFamily = Heebo, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold),
+            style = TextStyle(fontFamily = ShelfFont, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold),
         )
         Box(
             Modifier
@@ -280,7 +280,7 @@ fun ActionPill(
     ) {
         BasicText(
             text = text,
-            style = TextStyle(fontFamily = Heebo, 
+            style = TextStyle(fontFamily = ShelfFont, 
                 color = if (focused) Ink else Color.White,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -413,7 +413,7 @@ fun AppTile(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .padding(8.dp),
-                style = TextStyle(fontFamily = Heebo, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold),
+                style = TextStyle(fontFamily = ShelfFont, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold),
             )
         }
         // Glare + rim (a pulsing white rim while moving)
@@ -480,7 +480,7 @@ fun SourceTile(
             text = source.label,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = TextStyle(fontFamily = Heebo, color = textColor, fontSize = 15.sp, fontWeight = FontWeight.SemiBold),
+            style = TextStyle(fontFamily = ShelfFont, color = textColor, fontSize = 15.sp, fontWeight = FontWeight.SemiBold),
         )
     }
 }

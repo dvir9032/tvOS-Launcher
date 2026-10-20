@@ -152,6 +152,6 @@ Open the project in [Android Studio](https://developer.android.com/studio) and r
 
 <sub>Shelf is an independent project inspired by the design of tvOS. It is not affiliated with, endorsed by, or connected to Apple or Google. tvOS and Apple TV are trademarks of Apple Inc. All app names and artwork shown belong to their owners.</sub>
 
-<sub>Shelf uses the [Heebo](https://fonts.google.com/specimen/Heebo) typeface by Oded Ezer, under the SIL Open Font License ([license](docs/FONT-LICENSE-Heebo.txt)).</sub>
+<sub>Shelf uses the [Assistant](https://fonts.google.com/specimen/Assistant) typeface by Adobe Systems Inc. and Ben Nathan, under the SIL Open Font License ([license](docs/FONT-LICENSE-Assistant.txt)).</sub>
 
 <sub>[עברית](README.he.md)</sub>
