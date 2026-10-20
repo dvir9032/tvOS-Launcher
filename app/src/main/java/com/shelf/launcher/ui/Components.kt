@@ -56,6 +56,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.shelf.launcher.R
+import com.shelf.launcher.data.rememberArt
+import com.shelf.launcher.data.ShelfItem
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Column
 import com.shelf.launcher.data.BackdropStyle
 import com.shelf.launcher.data.ClockMode
 import com.shelf.launcher.data.TvApp
@@ -506,6 +510,136 @@ fun MoveHint(modifier: Modifier = Modifier) {
         BasicText(
             text = stringResource(R.string.move_hint),
             style = TextStyle(fontFamily = ShelfFont, color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Medium),
+        )
+    }
+}
+
+/** Top shelf: a big, sharp picture of the app's content, fading between items. */
+@Composable
+fun HeroArt(item: ShelfItem, modifier: Modifier = Modifier) {
+    Crossfade(targetState = item.image, modifier = modifier, animationSpec = tween(600), label = "hero") { uri ->
+        val art by rememberArt(uri, 1280)
+        val shown by animateFloatAsState(if (art != null) 1f else 0f, tween(450), label = "heroIn")
+        Box(Modifier.fillMaxSize()) {
+            art?.let {
+                Image(
+                    bitmap = it,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer { alpha = shown },
+                )
+            }
+            // Darker on the left, where the title sits.
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.horizontalGradient(
+                            0f to Color.Black.copy(alpha = 0.75f * shown),
+                            0.6f to Color.Transparent,
+                        )
+                    )
+            )
+        }
+    }
+}
+
+/** The app's name, then the show or video title and a short description. */
+@Composable
+fun HeroTitle(appName: String, item: ShelfItem, fontSize: Dp, modifier: Modifier = Modifier) {
+    Crossfade(targetState = item, modifier = modifier, animationSpec = tween(400), label = "heroTitle") { current ->
+        Column {
+            BasicText(
+                text = appName.uppercase(),
+                style = TextStyle(
+                    fontFamily = ShelfFont,
+                    color = Color.White.copy(alpha = 0.75f),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 2.sp,
+                ),
+            )
+            Spacer(Modifier.height(8.dp))
+            ShelfTitle(text = current.title, fontSize = fontSize, modifier = Modifier.fillMaxWidth())
+            current.description?.let { description ->
+                Spacer(Modifier.height(10.dp))
+                BasicText(
+                    text = description,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    style = TextStyle(
+                        fontFamily = ShelfFont,
+                        color = Color.White.copy(alpha = 0.85f),
+                        fontSize = 17.sp,
+                        lineHeight = 24.sp,
+                        shadow = Shadow(color = Color.Black.copy(alpha = 0.5f), offset = Offset(0f, 2f), blurRadius = 12f),
+                    ),
+                )
+            }
+        }
+    }
+}
+
+/** One piece of content in the row above the dock. OK opens it in its app. */
+@Composable
+fun ContentCard(
+    item: ShelfItem,
+    width: Dp,
+    height: Dp,
+    onFocused: () -> Unit,
+    onClick: () -> Unit,
+) {
+    var isFocused by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(if (isFocused) 1.1f else 1f, tween(180), label = "cardScale")
+    val art by rememberArt(item.image, 480)
+    val shape = RoundedCornerShape(height * 0.12f)
+    Box(
+        Modifier
+            .zIndex(if (isFocused) 1f else 0f)
+            .size(width, height)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+                shadowElevation = (if (isFocused) 24.dp else 4.dp).toPx()
+                this.shape = shape
+                clip = true
+            }
+            .onFocusChanged {
+                isFocused = it.isFocused
+                if (it.isFocused) onFocused()
+            }
+            .tvClickable(onClick = onClick)
+            .background(Color.White.copy(alpha = 0.12f))
+    ) {
+        val image = art
+        if (image != null) {
+            Image(
+                bitmap = image,
+                contentDescription = item.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
+        } else {
+            BasicText(
+                text = item.title,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(10.dp),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                style = TextStyle(fontFamily = ShelfFont, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium),
+            )
+        }
+        Box(
+            Modifier
+                .fillMaxSize()
+                .border(
+                    width = if (isFocused) 3.dp else 1.dp,
+                    color = Color.White.copy(alpha = if (isFocused) 0.9f else 0.2f),
+                    shape = shape,
+                )
         )
     }
 }

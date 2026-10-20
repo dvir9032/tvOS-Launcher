@@ -15,6 +15,7 @@ shot() {
 press() { adb shell input keyevent "$1"; }
 
 adb install -r ShelfLauncher.apk && echo "installed Shelf"
+adb shell pm grant "$PKG" android.permission.READ_TV_LISTINGS || true
 for apk in demo-apks/*.apk; do adb install -r "$apk" > /dev/null && echo "installed $apk"; done
 
 # Shelf in Hebrew (the rest of the TV stays in English).

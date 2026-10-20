@@ -45,6 +45,8 @@
     <string name="backdrop_blurred">Blurred</string>
     <string name="backdrop_sharp">Sharp</string>
     <string name="backdrop_color">Color only</string>
+    <string name="app_content">App content</string>
+    <string name="allow">Allow</string>
     <string name="hdmi_row">HDMI inputs row</string>
     <string name="shown">Shown</string>
     <string name="hidden">Hidden</string>

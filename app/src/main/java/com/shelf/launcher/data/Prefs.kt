@@ -32,6 +32,7 @@ data class ShelfPrefs(
     val glass: GlassLevel = GlassLevel.NORMAL,
     val backdrop: BackdropStyle = BackdropStyle.BLURRED,
     val showInputs: Boolean = true,
+    val showContent: Boolean = true,
 )
 
 /** Saved launcher settings. Reads once, then every change is written straight away. */
@@ -55,6 +56,7 @@ class Prefs(context: Context) {
         glass = enumOr(sp.getString("glass", null), GlassLevel.NORMAL),
         backdrop = enumOr(sp.getString("backdrop", null), BackdropStyle.BLURRED),
         showInputs = sp.getBoolean("showInputs", true),
+        showContent = sp.getBoolean("showContent", true),
     )
 
     private fun write(p: ShelfPrefs) {
@@ -66,6 +68,7 @@ class Prefs(context: Context) {
             .putString("glass", p.glass.name)
             .putString("backdrop", p.backdrop.name)
             .putBoolean("showInputs", p.showInputs)
+            .putBoolean("showContent", p.showContent)
             .apply()
     }
 

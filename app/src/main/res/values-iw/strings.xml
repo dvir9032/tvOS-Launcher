@@ -43,6 +43,8 @@
     <string name="backdrop_blurred">מטושטש</string>
     <string name="backdrop_sharp">חד</string>
     <string name="backdrop_color">צבע בלבד</string>
+    <string name="app_content">תוכן מהאפליקציות</string>
+    <string name="allow">אפשר</string>
     <string name="hdmi_row">שורת מקורות HDMI</string>
     <string name="shown">מוצגת</string>
     <string name="hidden">מוסתרת</string>

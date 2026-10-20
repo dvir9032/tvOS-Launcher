@@ -14,6 +14,8 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <!-- "Uninstall" in the app menu opens the system's uninstall screen -->
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+    <!-- Shows content that apps put on the TV home screen (asked once, can be refused) -->
+    <uses-permission android:name="android.permission.READ_TV_LISTINGS" />
 
     <!-- Lets the launcher see other apps (required when targeting Android 11+) -->
     <queries>

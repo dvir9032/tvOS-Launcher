@@ -7,6 +7,8 @@ import android.provider.Settings
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.shelf.launcher.data.AppRepository
+import com.shelf.launcher.data.ContentRepository
+import com.shelf.launcher.data.ShelfItem
 import com.shelf.launcher.data.InputRepository
 import com.shelf.launcher.data.Prefs
 import com.shelf.launcher.data.ShelfPrefs
@@ -27,6 +29,7 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     private val repository = AppRepository(app)
     private val inputRepository = InputRepository(app)
+    private val contentRepository = ContentRepository(app)
     private val updater = Updater(app)
     private val prefsStore = Prefs(app)
 
@@ -34,6 +37,13 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _apps = MutableStateFlow<List<TvApp>>(emptyList())
     val apps: StateFlow<List<TvApp>> = _apps.asStateFlow()
+
+    /** Content apps put on the home screen, per package. Empty without permission. */
+    private val _content = MutableStateFlow<Map<String, List<ShelfItem>>>(emptyMap())
+    val content: StateFlow<Map<String, List<ShelfItem>>> = _content.asStateFlow()
+
+    private val _contentAllowed = MutableStateFlow(contentRepository.hasPermission())
+    val contentAllowed: StateFlow<Boolean> = _contentAllowed.asStateFlow()
 
     private val _sources = MutableStateFlow<List<TvSource>>(emptyList())
     val sources: StateFlow<List<TvSource>> = _sources.asStateFlow()
@@ -78,6 +88,8 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
             val fresh = withContext(Dispatchers.IO) { repository.load() }
             if (fresh.map { it.key } != _apps.value.map { it.key }) _apps.value = fresh
             _sources.value = withContext(Dispatchers.IO) { inputRepository.load() }
+            _contentAllowed.value = contentRepository.hasPermission()
+            _content.value = withContext(Dispatchers.IO) { contentRepository.load() }
         }
         // Coming back from a cancelled install: forget it and look again.
         if (_update.value is UpdateState.Installing || _update.value is UpdateState.Failed) {
@@ -128,6 +140,15 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     fun launch(app: TvApp) {
         HomeButtonService.stayQuiet()
         runCatching { getApplication<Application>().startActivity(app.intent) }
+    }
+
+    fun launchItem(item: ShelfItem) {
+        val uri = item.intentUri ?: return
+        HomeButtonService.stayQuiet()
+        runCatching {
+            val intent = Intent.parseUri(uri, Intent.URI_INTENT_SCHEME).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            getApplication<Application>().startActivity(intent)
+        }
     }
 
     fun launchSource(source: TvSource) {

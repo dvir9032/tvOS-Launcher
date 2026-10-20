@@ -25,6 +25,8 @@ press() {
 
 adb logcat -c || true
 adb install -r ShelfLauncher.apk | tee -a "$LOG"
+# What the user does once: allow Shelf to show content from apps.
+adb shell pm grant "$PKG" android.permission.READ_TV_LISTINGS 2>&1 | tee -a "$LOG"
 
 # Like a Sony TV: the built-in launcher stays enabled and stays the default home.
 echo "--- start directly" | tee -a "$LOG"
@@ -81,9 +83,19 @@ press KEYCODE_DPAD_CENTER; shot 13e-home-button-page
 press KEYCODE_BACK;        sleep 1
 press KEYCODE_BACK;        shot 14-settings-closed
 
+# --- Top shelf: content from the focused app (YouTube is the 5th app in the dock) ---
+press KEYCODE_BACK; sleep 2                      # back to the first app
+for i in 1 2 3 4; do press KEYCODE_DPAD_RIGHT; sleep 1; done
+sleep 6; shot 15-youtube-shelf
+press KEYCODE_DPAD_UP;    sleep 3; shot 16-content-row
+press KEYCODE_DPAD_RIGHT; sleep 3; shot 17-content-next
+press KEYCODE_DPAD_DOWN;  sleep 1
+press KEYCODE_BACK;       sleep 2
+
 adb logcat -d > "$OUT/full-log.txt" || true
+grep "ShelfContent" "$OUT/full-log.txt" | tail -5 | tee -a "$LOG"
 grep -A40 "FATAL EXCEPTION" "$OUT/full-log.txt" > "$OUT/crash.txt" || true
-grep -E "$PKG|ShelfLauncher" "$OUT/full-log.txt" | tail -80 > "$OUT/app-log.txt" || true
+grep -E "$PKG|ShelfLauncher|ShelfContent" "$OUT/full-log.txt" | tail -80 > "$OUT/app-log.txt" || true
 
 if grep -q "$PKG" "$OUT/crash.txt"; then
   echo "::error title=Launcher crashed::$(head -40 "$OUT/crash.txt" | sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g')"

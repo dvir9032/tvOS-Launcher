@@ -450,6 +450,8 @@ fun SettingsPanel(
     onResetOrder: () -> Unit,
     onUpdateClick: () -> Unit,
     onSystemSettings: () -> Unit,
+    contentAllowed: Boolean,
+    onAllowContent: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     var page by remember { mutableStateOf(SettingsPage.MAIN) }
@@ -516,7 +518,7 @@ fun SettingsPanel(
                                         onOpen = ::open,
                                         onSystemSettings = onSystemSettings,
                                     )
-                                    SettingsPage.APPEARANCE -> AppearancePage(prefs, hasSources, onChange)
+                                    SettingsPage.APPEARANCE -> AppearancePage(prefs, hasSources, contentAllowed, onAllowContent, onChange)
                                     SettingsPage.APPS -> AppsPage(hiddenApps, onUnhide, onResetOrder)
                                     SettingsPage.HOME -> HomePage(homeServiceOn, onHomeSetup)
                                     SettingsPage.UPDATES -> UpdatesPage(update, versionName, onUpdateClick)
@@ -579,6 +581,8 @@ private fun MainPage(
 private fun AppearancePage(
     prefs: ShelfPrefs,
     hasSources: Boolean,
+    contentAllowed: Boolean,
+    onAllowContent: () -> Unit,
     onChange: ((ShelfPrefs) -> ShelfPrefs) -> Unit,
 ) {
     val first = remember { FocusRequester() }
@@ -602,6 +606,20 @@ private fun AppearancePage(
         item {
             SidebarRow(stringResource(R.string.backdrop), value = stringResource(prefs.backdrop.label)) {
                 onChange { it.copy(backdrop = it.backdrop.next()) }
+            }
+        }
+        item {
+            SidebarRow(
+                text = stringResource(R.string.app_content),
+                value = stringResource(
+                    when {
+                        !contentAllowed -> R.string.allow
+                        prefs.showContent -> R.string.shown
+                        else -> R.string.hidden
+                    }
+                ),
+            ) {
+                if (!contentAllowed) onAllowContent() else onChange { it.copy(showContent = !it.showContent) }
             }
         }
         if (hasSources) {

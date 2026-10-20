@@ -22,6 +22,7 @@ done
 # Home button service like a user would, so there's no setup pill in the shot.
 adb uninstall "$PKG" > /dev/null 2>&1 || true
 adb install ShelfLauncher.apk > /dev/null && echo "reinstalled Shelf"
+adb shell pm grant "$PKG" android.permission.READ_TV_LISTINGS || true
 # Clear the setting first: writing the same value again doesn't make Android
 # reconnect the service after a reinstall.
 adb shell settings delete secure enabled_accessibility_services > /dev/null 2>&1 || true

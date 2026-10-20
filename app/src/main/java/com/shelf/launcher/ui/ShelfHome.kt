@@ -47,6 +47,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import kotlinx.coroutines.delay
+import androidx.compose.foundation.layout.height
 import com.shelf.launcher.LauncherViewModel
 import com.shelf.launcher.data.SOURCE_PREFIX
 import com.shelf.launcher.data.TvApp
@@ -75,7 +76,7 @@ private val MinimalBringIntoView = object : BringIntoViewSpec {
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ShelfHome(vm: LauncherViewModel) {
+fun ShelfHome(vm: LauncherViewModel, onAllowContent: () -> Unit) {
     val allApps by vm.apps.collectAsState()
     val prefs by vm.prefs.collectAsState()
     val sources by vm.sources.collectAsState()
@@ -83,6 +84,8 @@ fun ShelfHome(vm: LauncherViewModel) {
     val homePresses by vm.homePresses.collectAsState()
     val homeSetupNeeded by vm.homeSetupNeeded.collectAsState()
     val homeServiceOn by vm.homeServiceOn.collectAsState()
+    val content by vm.content.collectAsState()
+    val contentAllowed by vm.contentAllowed.collectAsState()
 
     val columns = prefs.columns
     val arranged = remember(allApps, prefs.order) { arrange(allApps, prefs.order) }
@@ -96,6 +99,23 @@ fun ShelfHome(vm: LauncherViewModel) {
     val focusedSource = shownSources.firstOrNull { SOURCE_PREFIX + it.id == focusedKey }
     val title = focusedApp?.label ?: focusedSource?.label ?: visible.firstOrNull()?.label.orEmpty()
     val backdropApp = if (focusedSource != null) null else (focusedApp ?: visible.firstOrNull())
+
+    // Top shelf: content from the last focused app (shows, episodes, videos it put on
+    // the TV home screen). The big picture rotates until a content card is focused.
+    var ownerKey by rememberSaveable { mutableStateOf<String?>(null) }
+    var focusedItemId by remember { mutableStateOf<Long?>(null) }
+    val owner = visible.firstOrNull { it.key == ownerKey } ?: visible.firstOrNull()
+    val shelfItems = if (prefs.showContent) owner?.packageName?.let { content[it] }.orEmpty() else emptyList()
+    var heroIndex by remember(owner?.key) { mutableIntStateOf(0) }
+    LaunchedEffect(owner?.key, shelfItems.size, focusedItemId) {
+        if (shelfItems.size < 2 || focusedItemId != null) return@LaunchedEffect
+        while (true) {
+            delay(8_000)
+            heroIndex = (heroIndex + 1) % shelfItems.size
+        }
+    }
+    val heroItem = if (focusedSource != null) null else
+        shelfItems.firstOrNull { it.id == focusedItemId } ?: shelfItems.getOrNull(heroIndex % shelfItems.size.coerceAtLeast(1))
 
     var menuFor by remember { mutableStateOf<TvApp?>(null) }
     var movingKey by remember { mutableStateOf<String?>(null) }
@@ -119,7 +139,8 @@ fun ShelfHome(vm: LauncherViewModel) {
         requesterFor(key).requestWithRetry()
     }
 
-    fun lazyIndexOfRow(row: Int) = if (row == 0) 0 else row + (if (shownSources.isNotEmpty()) 1 else 0)
+    // Item 0 is the content row (empty when there's none), the dock is item 1.
+    fun lazyIndexOfRow(row: Int) = if (row == 0) 1 else row + 1 + (if (shownSources.isNotEmpty()) 1 else 0)
 
     fun backToTop() {
         movingKey = null
@@ -197,6 +218,9 @@ fun ShelfHome(vm: LauncherViewModel) {
         val trayTop = h * 0.70f
 
         Backdrop(app = backdropApp, style = prefs.backdrop, modifier = Modifier.fillMaxSize())
+        if (heroItem != null) {
+            HeroArt(item = heroItem, modifier = Modifier.fillMaxSize())
+        }
 
         // Darken the top (for the title) and the bottom (for the dock).
         Box(
@@ -212,14 +236,26 @@ fun ShelfHome(vm: LauncherViewModel) {
                 )
         )
 
-        ShelfTitle(
-            text = title,
-            fontSize = w * 0.068f,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = w * 0.046f, top = h * 0.06f)
-                .fillMaxWidth(0.6f),
-        )
+        if (heroItem != null && owner != null) {
+            HeroTitle(
+                appName = owner.label,
+                item = heroItem,
+                fontSize = w * 0.046f,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(start = w * 0.046f, top = h * 0.06f)
+                    .fillMaxWidth(0.52f),
+            )
+        } else {
+            ShelfTitle(
+                text = title,
+                fontSize = w * 0.068f,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(start = w * 0.046f, top = h * 0.06f)
+                    .fillMaxWidth(0.6f),
+            )
+        }
 
         Row(
             modifier = Modifier
@@ -252,7 +288,11 @@ fun ShelfHome(vm: LauncherViewModel) {
                             modifier = Modifier
                                 .focusRequester(requesterFor(app.key))
                                 .onGloballyPositioned { tileBounds[app.key] = it.boundsInRoot() },
-                            onFocused = { focusedKey = app.key },
+                            onFocused = {
+                                focusedKey = app.key
+                                ownerKey = app.key
+                                focusedItemId = null
+                            },
                             onClick = { if (movingKey == null) vm.launch(app) },
                             onLongClick = { if (movingKey == null) menuFor = app },
                             onMove = ::move,
@@ -266,15 +306,47 @@ fun ShelfHome(vm: LauncherViewModel) {
             }
         }
 
+        val spacing = h * 0.035f
+        val cardH = tileH * 0.9f
+        val cardW = cardH * 16f / 9f
+        val maxCards = ((w - (sidePad + trayPadH) * 2 + gap) / (cardW + gap)).toInt().coerceAtLeast(1)
+        val shelfRowHeight = if (shelfItems.isNotEmpty()) cardH else 0.dp
+
         // On TVs Compose scrolls the focused row to ~30% of the screen by default,
         // which pulls the dock up. Only scroll when a row is actually cut off.
         CompositionLocalProvider(LocalBringIntoViewSpec provides MinimalBringIntoView) {
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(top = trayTop, bottom = h * 0.3f),
-                verticalArrangement = Arrangement.spacedBy(h * 0.035f),
+                // The dock always starts at trayTop; the content row (or an empty item) sits above it.
+                contentPadding = PaddingValues(top = trayTop - spacing - shelfRowHeight, bottom = h * 0.3f),
+                verticalArrangement = Arrangement.spacedBy(spacing),
             ) {
+                item(key = "shelf") {
+                    if (shelfItems.isNotEmpty()) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = sidePad + trayPadH),
+                            horizontalArrangement = Arrangement.spacedBy(gap),
+                        ) {
+                            shelfItems.take(maxCards).forEach { item ->
+                                key(item.id) {
+                                    ContentCard(
+                                        item = item,
+                                        width = cardW,
+                                        height = cardH,
+                                        onFocused = {
+                                            focusedKey = "item:${item.id}"
+                                            focusedItemId = item.id
+                                        },
+                                        onClick = { vm.launchItem(item) },
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        Box(Modifier.height(0.dp))
+                    }
+                }
                 rows.firstOrNull()?.let { first ->
                     item(key = "dock") {
                         GlassTray(
@@ -299,7 +371,10 @@ fun ShelfHome(vm: LauncherViewModel) {
                                         width = tileW,
                                         height = tileH * 0.42f,
                                         modifier = Modifier.focusRequester(requesterFor(sourceKey)),
-                                        onFocused = { focusedKey = sourceKey },
+                                        onFocused = {
+                                            focusedKey = sourceKey
+                                            focusedItemId = null
+                                        },
                                         onClick = { vm.launchSource(source) },
                                     )
                                 }
@@ -392,6 +467,8 @@ fun ShelfHome(vm: LauncherViewModel) {
             onResetOrder = vm::resetOrder,
             onUpdateClick = vm::onUpdateClicked,
             onSystemSettings = vm::openSystemSettings,
+            contentAllowed = contentAllowed,
+            onAllowContent = onAllowContent,
             onDismiss = {
                 settingsOpen = false
                 focusOn(focusedKey ?: visible.firstOrNull()?.key)
