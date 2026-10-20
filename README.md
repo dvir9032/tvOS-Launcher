@@ -5,7 +5,7 @@
 
 <p align="center">
   <b>The Apple TV look, on your Android TV.</b><br>
-  A tvOS-inspired home screen with a frosted-glass dock, full-screen artwork and zero clutter.
+  A tvOS-inspired home screen with a frosted-glass dock, content from your apps, Control Center and zero clutter.
 </p>
 
 <p align="center">
@@ -23,38 +23,55 @@
 
 Most Android TV home screens are crowded with ads, rows of suggestions and things you never asked for. Shelf strips all that away.
 
-Just your apps, sitting on a glass dock. Move between them and the whole screen comes alive with the colors of the app you're on. Clean, calm, and instantly familiar if you've ever used an Apple TV.
+Just your apps, sitting on a glass dock. Move between them and the whole screen comes alive with the colors and content of the app you're on. Clean, calm, and instantly familiar if you've ever used an Apple TV.
 
-![The backdrop follows your focus](docs/screenshots/focus.png)
+![Shelf in motion](docs/demo.gif)
 
 ## Features
 
-**🪟 Frosted-glass dock**
-Your apps on a translucent shelf at the bottom of the screen, using each app's official TV artwork.
+**🎬 Top shelf: content from your apps**
+Land on YouTube, Netflix or any app that publishes to the Android TV home screen, and its shows and videos fill the screen, with the title and a short description. They rotate on their own; press Up for the page dots, Left / Right to browse, OK to start watching.
 
-**🎨 A screen that follows you**
-The background takes on the colors of whichever app you're on and fades smoothly as you move. The focused tile lifts, grows and catches the light.
+![Top shelf](docs/screenshots/topshelf.png)
+
+**🪟 Frosted glass everywhere**
+The dock, menus, Control Center and Settings are frosted glass that shows a blurred view of what's behind them, even on older TVs that can't blur live.
+
+**🎛️ Control Center**
+One button at the top right: sound, theme, sleep timer, picture settings, Wi-Fi, screen off, the TV's power menu and a volume bar. Plus an Inputs button for your HDMI devices.
+
+| Dark | Light |
+|---|---|
+| ![Control Center](docs/screenshots/control-center.png) | ![Control Center, light](docs/screenshots/control-center-light.png) |
+
+**🌗 Dark, Light or Auto**
+Dark glass with white text, bright glass with dark text, or Auto, which turns dark from 7 pm to 6 am.
 
 **✋ Arrange it your way**
-Hold OK on any app for a menu right above it: open, move, move to start, hide, app info or uninstall. Your layout is remembered.
+Hold OK on any app for a menu right above it: open, move, move to start, hide, add to folder, app info or uninstall. Your layout is remembered.
 
-| Long-press menu | Moving an app |
+| App menu | Folders |
 |---|---|
-| ![Long-press menu](docs/screenshots/menu.png) | ![Moving an app](docs/screenshots/move.png) |
+| ![App menu](docs/screenshots/menu.png) | ![A folder](docs/screenshots/folder.png) |
 
-**📺 HDMI inputs, one click away**
-Your game console, cable box or soundbar sits in a row right under the dock, with the names you gave them.
+**📁 Folders**
+Group apps into ready-made folders (Games, Movies & TV, Music, Kids, Tools) with no typing, or rename them with the on-screen keyboard.
 
-**⚙️ Make it yours**
-Choose how many apps per row, a 12 or 24-hour clock, how strong the glass looks, and the backdrop style: blurred, sharp or plain color.
+**🕘 Recent**
+The apps you opened last, in a row that appears when you press Down.
 
-![Settings](docs/screenshots/settings.png)
+**⚙️ Settings, tvOS style**
+A floating glass sidebar: theme, apps per row, 12 or 24-hour clock, glass strength, backdrop style, app content, hidden apps and more. In English, or in Hebrew (right to left) when your TV is set to Hebrew.
+
+| English | עברית |
+|---|---|
+| ![Settings](docs/screenshots/settings.png) | ![Settings in Hebrew](docs/screenshots/settings-hebrew.png) |
 
 **🔄 Updates itself**
 When a new version is out, an *Update available* button appears in the corner. One click and you're on the latest.
 
 **🪶 Light and private**
-No account, no ads, no tracking, no internet needed (except for checking updates). Works on Android TV 8.0 and newer, and stays smooth on older TVs.
+No account, no ads, no tracking. Works on Android TV 8.0 and newer, and stays smooth on older TVs.
 
 ## Install in under a minute
 
@@ -141,6 +158,12 @@ Anytime. Turn off *Shelf – Home button* in Accessibility settings, or uninstal
 **Does it work on my TV?**
 Shelf runs on Android TV 8.0 and newer. Every version is tested on an Android TV 10 emulator, and it runs on a Sony Bravia. Menus are in English, or in Hebrew when your TV is set to Hebrew.
 
+**What does Shelf ask permission for?**
+Each one is optional and asked only when needed:
+- *TV listings*: to show content from your apps in the top shelf.
+- *Shelf – Home button* (accessibility): so the Home button opens Shelf, and to open the TV's power menu.
+- *Lock the screen* (device admin): only for "Screen off" and the sleep timer.
+
 **How do I update?**
 Shelf tells you when there's a new version. You can also reinstall from the same Downloader code anytime; your layout and settings stay.
 
@@ -151,6 +174,8 @@ Open the project in [Android Studio](https://developer.android.com/studio) and r
 ---
 
 <sub>Shelf is an independent project inspired by the design of tvOS. It is not affiliated with, endorsed by, or connected to Apple or Google. tvOS and Apple TV are trademarks of Apple Inc. All app names and artwork shown belong to their owners.</sub>
+
+<sub>Control Center, folders, the Recent row and the themes were inspired by [Lumen](https://github.com/ammar027/lumen-webos) for LG webOS (MIT).</sub>
 
 <sub>Shelf uses the [Assistant](https://fonts.google.com/specimen/Assistant) typeface by Adobe Systems Inc. and Ben Nathan, under the SIL Open Font License ([license](docs/FONT-LICENSE-Assistant.txt)).</sub>
 
