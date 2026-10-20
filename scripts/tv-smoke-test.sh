@@ -23,6 +23,14 @@ press() {
   adb shell input keyevent "$1"
 }
 
+# The remote's Home button as real hardware (adb's "input keyevent" skips the
+# accessibility key filter that Shelf uses for Home).
+remote_home() {
+  adb emu event send EV_KEY:KEY_HOMEPAGE:1 EV_SYN:0:0 > /dev/null 2>&1 &&
+    adb emu event send EV_KEY:KEY_HOMEPAGE:0 EV_SYN:0:0 > /dev/null 2>&1 ||
+    press KEYCODE_HOME
+}
+
 adb logcat -c || true
 adb install -r ShelfLauncher.apk | tee -a "$LOG"
 # What the user does once: allow Shelf to show content from apps.
@@ -68,7 +76,7 @@ echo "--- quick open after Home" | tee -a "$LOG"
 press KEYCODE_HOME; sleep 4                      # leave Shelf settled first
 adb logcat -c || true
 t0=$(date +%s%N)
-press KEYCODE_HOME
+remote_home
 for i in $(seq 1 40); do resumed | grep -q "$PKG" && break; sleep 0.25; done
 t1=$(date +%s%N)
 echo "home -> Shelf in front: $(( (t1 - t0) / 1000000 )) ms" | tee -a "$LOG"
@@ -80,7 +88,7 @@ for i in $(seq 1 40); do
 done
 t2=$(date +%s%N)
 echo "OK -> app in front: $opened after $(( (t2 - t1) / 1000000 )) ms :: $(resumed)" | tee -a "$LOG"
-adb logcat -d | grep -iE "stopped|app switch|Background activity start|Abort background" | tail -10 | tee -a "$LOG"
+adb logcat -d | grep -iE "ShelfHome|stopped|START u0" | tail -12 | tee -a "$LOG"
 press KEYCODE_HOME; sleep 6
 
 # --- 2.0 features ---

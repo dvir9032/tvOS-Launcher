@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.shelf.launcher.data.ContentRepository
+import com.shelf.launcher.home.HomeButtonService
 import com.shelf.launcher.ui.ShelfHome
 
 class MainActivity : ComponentActivity() {
@@ -21,6 +22,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (HomeButtonService.isStale(intent)) moveTaskToBack(true)
         setContent { ShelfHome(viewModel, onAllowContent = ::requestContent) }
 
         // Ask once, on first launch. After that only from Settings → Appearance.
@@ -42,6 +44,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        // A late "open Shelf" from the Home button service: an app was opened since, keep it in front.
+        if (HomeButtonService.isStale(intent)) {
+            moveTaskToBack(true)
+            return
+        }
         if (intent.action == Intent.ACTION_MAIN && intent.hasCategory(Intent.CATEGORY_HOME)) {
             viewModel.onHomePressed()
         }

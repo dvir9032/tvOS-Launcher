@@ -48,7 +48,10 @@ class HomeButtonService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
         val pkg = event.packageName?.toString() ?: return
-        if (pkg !in builtInLaunchers) return
+        if (pkg !in builtInLaunchers) {
+            if (pkg != packageName && pkg !in NOT_APPS) otherAppAt = SystemClock.elapsedRealtime()
+            return
+        }
 
         // Only the launcher's own screen coming up counts, not a popup or view inside it.
         val cls = event.className?.toString()
@@ -92,6 +95,7 @@ class HomeButtonService : AccessibilityService() {
                 .addCategory(Intent.CATEGORY_HOME)
                 .setClass(this, MainActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                .putExtra(EXTRA_REQUESTED_AT, SystemClock.elapsedRealtime())
         )
     }.isSuccess
 
@@ -101,6 +105,28 @@ class HomeButtonService : AccessibilityService() {
         private const val TAG = "ShelfHome"
         // Settings apps also register a fallback home screen; never take over those.
         private val NEVER_REPLACE = setOf("com.android.settings", "com.android.tv.settings")
+
+        // Windows that aren't the user opening an app (volume bar, system popups).
+        private val NOT_APPS = setOf("android", "com.android.systemui")
+
+        const val EXTRA_REQUESTED_AT = "shelf.requestedAt"
+
+        /** When an app other than Shelf or the built-in launcher last came to the front. */
+        @Volatile
+        private var otherAppAt = 0L
+
+        /**
+         * Android can hold back the start of Shelf for a few seconds after Home is
+         * pressed and run it later. If the user opened an app in the meantime,
+         * Shelf showing up then would cover that app.
+         */
+        fun isStale(intent: android.content.Intent?): Boolean {
+            val at = intent?.getLongExtra(EXTRA_REQUESTED_AT, 0L) ?: 0L
+            if (at <= 0L) return false
+            // Arrived on time: nothing was held back.
+            if (SystemClock.elapsedRealtime() - at < 1_500) return false
+            return otherAppAt > at + 300
+        }
 
         @Volatile
         private var instance: HomeButtonService? = null
