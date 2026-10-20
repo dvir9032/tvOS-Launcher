@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home button service -->
+    <string name="home_service_label">Shelf – כפתור הבית</string>
+    <string name="home_service_description">פותח את Shelf בכל פעם שהלאנצ\'ר המובנה של הטלוויזיה עולה, כך שכפתור הבית בשלט מוביל ל־Shelf. השירות רק בודק איזו אפליקציה פתוחה, ולא קורא את התוכן שעל המסך.</string>
+
+    <!-- Top bar -->
+    <string name="setup_home_button">הגדר כפתור בית</string>
+    <string name="update_available">עדכון זמין</string>
+    <string name="update_downloading">מוריד %1$d%%</string>
+    <string name="update_installing">מתקין…</string>
+
+    <!-- App menu -->
+    <string name="menu_open">פתח</string>
+    <string name="menu_move">הזז</string>
+    <string name="menu_move_first">העבר להתחלה</string>
+    <string name="menu_hide">הסתר</string>
+    <string name="menu_app_info">פרטי אפליקציה</string>
+    <string name="menu_uninstall">הסר התקנה</string>
+    <string name="move_hint">חיצים להזזה · OK לסיום</string>
+
+    <!-- Settings pages -->
+    <string name="settings">הגדרות</string>
+    <string name="settings_appearance">מראה</string>
+    <string name="settings_apps">אפליקציות</string>
+    <string name="settings_home_button">כפתור הבית</string>
+    <string name="settings_updates">עדכונים</string>
+    <string name="settings_about">אודות</string>
+    <string name="settings_tv">הגדרות הטלוויזיה</string>
+
+    <!-- Appearance -->
+    <string name="apps_per_row">אפליקציות בשורה</string>
+    <string name="clock">שעון</string>
+    <string name="clock_system">לפי המערכת</string>
+    <string name="clock_24">24 שעות</string>
+    <string name="clock_12">12 שעות</string>
+    <string name="glass">זכוכית</string>
+    <string name="glass_light">עדינה</string>
+    <string name="glass_normal">רגילה</string>
+    <string name="glass_strong">חזקה</string>
+    <string name="backdrop">רקע</string>
+    <string name="backdrop_blurred">מטושטש</string>
+    <string name="backdrop_sharp">חד</string>
+    <string name="backdrop_color">צבע בלבד</string>
+    <string name="hdmi_row">שורת מקורות HDMI</string>
+    <string name="shown">מוצגת</string>
+    <string name="hidden">מוסתרת</string>
+
+    <!-- Apps -->
+    <string name="reset_order">איפוס סדר</string>
+    <string name="reset_order_value">א–ת</string>
+    <string name="hidden_apps">אפליקציות מוסתרות</string>
+    <string name="show">הצג</string>
+    <string name="no_hidden_apps">אין אפליקציות מוסתרות. לחיצה ארוכה על OK מעל אפליקציה פותחת תפריט להזזה ולהסתרה.</string>
+
+    <!-- Home button -->
+    <string name="home_status">מצב</string>
+    <string name="on">פעיל</string>
+    <string name="off">כבוי</string>
+    <string name="home_open_settings">פתח הגדרות נגישות</string>
+    <string name="home_explain">בטלוויזיות שלא מאפשרות לבחור מסך בית, צריך להפעיל את \"Shelf – כפתור הבית\" בהגדרות הנגישות, ואז כפתור הבית יפתח את Shelf.</string>
+
+    <!-- Updates -->
+    <string name="version">גרסה</string>
+    <string name="update_check">בדוק עדכונים</string>
+    <string name="update_checking">בודק…</string>
+    <string name="update_up_to_date">מעודכן</string>
+    <string name="update_install">התקן גרסה %1$d</string>
+    <string name="update_explain">Shelf בודק לבד אם יש גרסה חדשה, ומציג כפתור כשהיא מוכנה.</string>
+    <string name="update_no_network">אין חיבור לרשת</string>
+    <string name="update_download_failed">ההורדה נכשלה</string>
+    <string name="update_install_failed">ההתקנה נכשלה</string>
+
+    <!-- About -->
+    <string name="about_text">מסך בית לאנדרואיד TV בהשראת tvOS.</string>
+    <string name="source_code">קוד מקור</string>
+    <string name="font">גופן</string>
+</resources>

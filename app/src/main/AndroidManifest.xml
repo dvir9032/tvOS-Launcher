@@ -12,6 +12,8 @@
     <!-- Checking GitHub for new versions and installing them -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- "Uninstall" in the app menu opens the system's uninstall screen -->
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
 
     <!-- Lets the launcher see other apps (required when targeting Android 11+) -->
     <queries>

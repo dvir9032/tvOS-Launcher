@@ -70,7 +70,16 @@ press KEYCODE_DPAD_CENTER; shot 12-move-done
 # Up to the settings button in the top bar, open settings.
 press KEYCODE_DPAD_UP; sleep 1
 press KEYCODE_DPAD_CENTER; shot 13-settings
-press KEYCODE_BACK; shot 14-settings-closed
+press KEYCODE_DPAD_CENTER; shot 13b-appearance      # first category
+press KEYCODE_DPAD_CENTER; shot 13c-apps-per-row    # changes 6 → 7
+press KEYCODE_DPAD_CENTER; sleep 1                  # 7 → 5
+press KEYCODE_DPAD_CENTER; sleep 1                  # 5 → 6, back to normal
+press KEYCODE_BACK;        shot 13d-settings-main
+press KEYCODE_DPAD_DOWN;   sleep 1
+press KEYCODE_DPAD_DOWN;   sleep 1
+press KEYCODE_DPAD_CENTER; shot 13e-home-button-page
+press KEYCODE_BACK;        sleep 1
+press KEYCODE_BACK;        shot 14-settings-closed
 
 adb logcat -d > "$OUT/full-log.txt" || true
 grep -A40 "FATAL EXCEPTION" "$OUT/full-log.txt" > "$OUT/crash.txt" || true

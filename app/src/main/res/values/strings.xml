@@ -1,7 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Shelf</string>
-    <string name="settings">הגדרות</string>
-    <string name="home_service_label">Shelf – כפתור הבית</string>
-    <string name="home_service_description">פותח את Shelf בכל פעם שהלאנצ\'ר המובנה של הטלוויזיה עולה, כך שכפתור הבית בשלט מוביל ל־Shelf. השירות רק בודק איזו אפליקציה פתוחה, ולא קורא את התוכן שעל המסך.</string>
+    <string name="app_name" translatable="false">Shelf</string>
+
+    <!-- Home button service -->
+    <string name="home_service_label">Shelf – Home button</string>
+    <string name="home_service_description">Opens Shelf whenever the TV\'s built-in launcher comes up, so the Home button on your remote takes you to Shelf. It only checks which app is in front and doesn\'t read anything on your screen.</string>
+
+    <!-- Top bar -->
+    <string name="setup_home_button">Set up Home button</string>
+    <string name="update_available">Update available</string>
+    <string name="update_downloading">Downloading %1$d%%</string>
+    <string name="update_installing">Installing…</string>
+
+    <!-- App menu -->
+    <string name="menu_open">Open</string>
+    <string name="menu_move">Move</string>
+    <string name="menu_move_first">Move to start</string>
+    <string name="menu_hide">Hide</string>
+    <string name="menu_app_info">App info</string>
+    <string name="menu_uninstall">Uninstall</string>
+    <string name="move_hint">Use the arrows to move · OK to finish</string>
+
+    <!-- Settings pages -->
+    <string name="settings">Settings</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_apps">Apps</string>
+    <string name="settings_home_button">Home button</string>
+    <string name="settings_updates">Updates</string>
+    <string name="settings_about">About</string>
+    <string name="settings_tv">TV settings</string>
+
+    <!-- Appearance -->
+    <string name="apps_per_row">Apps per row</string>
+    <string name="clock">Clock</string>
+    <string name="clock_system">System</string>
+    <string name="clock_24">24-hour</string>
+    <string name="clock_12">12-hour</string>
+    <string name="glass">Glass</string>
+    <string name="glass_light">Light</string>
+    <string name="glass_normal">Normal</string>
+    <string name="glass_strong">Strong</string>
+    <string name="backdrop">Background</string>
+    <string name="backdrop_blurred">Blurred</string>
+    <string name="backdrop_sharp">Sharp</string>
+    <string name="backdrop_color">Color only</string>
+    <string name="hdmi_row">HDMI inputs row</string>
+    <string name="shown">Shown</string>
+    <string name="hidden">Hidden</string>
+
+    <!-- Apps -->
+    <string name="reset_order">Reset order</string>
+    <string name="reset_order_value">A–Z</string>
+    <string name="hidden_apps">Hidden apps</string>
+    <string name="show">Show</string>
+    <string name="no_hidden_apps">No hidden apps. Hold OK on an app to move or hide it.</string>
+
+    <!-- Home button -->
+    <string name="home_status">Status</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="home_open_settings">Open accessibility settings</string>
+    <string name="home_explain">On TVs that don\'t let you choose a home screen, turn on \"Shelf – Home button\" in accessibility settings so the Home button opens Shelf.</string>
+
+    <!-- Updates -->
+    <string name="version">Version</string>
+    <string name="update_check">Check for updates</string>
+    <string name="update_checking">Checking…</string>
+    <string name="update_up_to_date">Up to date</string>
+    <string name="update_install">Install version %1$d</string>
+    <string name="update_explain">Shelf checks for new versions on its own and shows a button when one is ready.</string>
+    <string name="update_no_network">No connection</string>
+    <string name="update_download_failed">Download failed</string>
+    <string name="update_install_failed">Install failed</string>
+
+    <!-- About -->
+    <string name="about_text">A tvOS-inspired home screen for Android TV.</string>
+    <string name="source_code">Source code</string>
+    <string name="font">Font</string>
 </resources>

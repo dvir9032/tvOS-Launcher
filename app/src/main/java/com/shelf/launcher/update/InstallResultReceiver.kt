@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.widget.Toast
 import androidx.core.content.IntentCompat
+import com.shelf.launcher.R
 
 /** Gets the installer's answer: shows the system "Install?" screen, or an error. */
 class InstallResultReceiver : BroadcastReceiver() {
@@ -19,7 +20,8 @@ class InstallResultReceiver : BroadcastReceiver() {
             }
             PackageInstaller.STATUS_SUCCESS -> Unit
             else -> {
-                val message = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE) ?: "ההתקנה נכשלה"
+                val message = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)
+                    ?: context.getString(R.string.update_install_failed)
                 Toast.makeText(context, message, Toast.LENGTH_LONG).show()
             }
         }

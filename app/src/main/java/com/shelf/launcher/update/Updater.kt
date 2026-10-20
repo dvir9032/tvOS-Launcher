@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.os.Build
 import com.shelf.launcher.BuildConfig
+import com.shelf.launcher.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -56,7 +57,7 @@ class Updater(private val context: Context) {
             } finally {
                 conn.disconnect()
             }
-        }.getOrElse { UpdateState.Failed("אין חיבור לרשת") }
+        }.getOrElse { UpdateState.Failed(context.getString(R.string.update_no_network)) }
     }
 
     suspend fun downloadAndInstall(url: String, onProgress: (Float) -> Unit): UpdateState =
@@ -85,7 +86,7 @@ class Updater(private val context: Context) {
                 }
                 install(file)
                 UpdateState.Installing
-            }.getOrElse { UpdateState.Failed(it.message ?: "ההורדה נכשלה") }
+            }.getOrElse { UpdateState.Failed(context.getString(R.string.update_download_failed)) }
         }
 
     private fun install(file: File) {

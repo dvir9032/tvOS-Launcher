@@ -67,6 +67,7 @@ jobs:
           script: |
             bash scripts/tv-smoke-test.sh
             bash scripts/record-demo.sh || true
+            bash scripts/hebrew-screens.sh || true
 
       - name: Make demo GIF
         if: always()

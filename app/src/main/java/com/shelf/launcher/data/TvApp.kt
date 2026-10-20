@@ -17,6 +17,10 @@ import androidx.compose.ui.graphics.ImageBitmap
 data class TvApp(
     val key: String,
     val label: String,
+    /** null for Shelf's own tiles (like Settings) */
+    val packageName: String?,
+    /** false for apps that came with the TV */
+    val canUninstall: Boolean,
     val intent: Intent,
     val banner: ImageBitmap?,
     val icon: ImageBitmap?,

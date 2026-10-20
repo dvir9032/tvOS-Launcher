@@ -2,6 +2,7 @@ package com.shelf.launcher
 
 import android.app.Application
 import android.content.Intent
+import android.net.Uri
 import android.provider.Settings
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -132,6 +133,25 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     fun launchSource(source: TvSource) {
         HomeButtonService.stayQuiet()
         runCatching { getApplication<Application>().startActivity(source.intent) }
+    }
+
+    fun openAppInfo(packageName: String) {
+        runCatching {
+            getApplication<Application>().startActivity(
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        }
+    }
+
+    /** Opens the system's "Uninstall this app?" screen. The list refreshes when we come back. */
+    fun uninstall(packageName: String) {
+        runCatching {
+            getApplication<Application>().startActivity(
+                Intent(Intent.ACTION_DELETE, Uri.fromParts("package", packageName, null))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        }
     }
 
     /** Opens the TV's accessibility settings, where the Home button service is switched on. */

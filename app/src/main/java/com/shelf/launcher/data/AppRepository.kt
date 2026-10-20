@@ -3,6 +3,7 @@ package com.shelf.launcher.data
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.provider.Settings
@@ -49,8 +50,10 @@ class AppRepository(private val context: Context) {
             }.getOrNull()
             val icon = runCatching { info.loadIcon(pm) }.getOrNull()
 
+            val isSystem = (activity.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
             into[pkg] = build(
                 key = pkg,
+                canUninstall = !isSystem,
                 label = info.loadLabel(pm).toString(),
                 intent = launch,
                 bannerDrawable = banner,
@@ -65,6 +68,8 @@ class AppRepository(private val context: Context) {
         return TvApp(
             key = "shelf:settings",
             label = context.getString(R.string.settings),
+            packageName = null,
+            canUninstall = false,
             intent = Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
             banner = null,
             icon = icon?.asImageBitmap(),
@@ -76,6 +81,7 @@ class AppRepository(private val context: Context) {
 
     private fun build(
         key: String,
+        canUninstall: Boolean,
         label: String,
         intent: Intent,
         bannerDrawable: Drawable?,
@@ -96,6 +102,8 @@ class AppRepository(private val context: Context) {
         return TvApp(
             key = key,
             label = label,
+            packageName = key,
+            canUninstall = canUninstall,
             intent = intent,
             banner = banner?.asImageBitmap(),
             icon = icon?.asImageBitmap(),

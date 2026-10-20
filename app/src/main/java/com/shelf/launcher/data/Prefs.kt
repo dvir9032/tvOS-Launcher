@@ -1,17 +1,23 @@
 package com.shelf.launcher.data
 
 import android.content.Context
+import androidx.annotation.StringRes
+import com.shelf.launcher.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-enum class ClockMode(val label: String) { SYSTEM("לפי המערכת"), H24("24 שעות"), H12("12 שעות") }
-
-enum class GlassLevel(val label: String, val alpha: Float) {
-    LIGHT("עדינה", 0.08f), NORMAL("רגילה", 0.13f), STRONG("חזקה", 0.22f)
+enum class ClockMode(@StringRes val label: Int) {
+    SYSTEM(R.string.clock_system), H24(R.string.clock_24), H12(R.string.clock_12)
 }
 
-enum class BackdropStyle(val label: String) { BLURRED("מטושטש"), SHARP("חד"), COLOR("צבע בלבד") }
+enum class GlassLevel(@StringRes val label: Int, val alpha: Float) {
+    LIGHT(R.string.glass_light, 0.08f), NORMAL(R.string.glass_normal, 0.13f), STRONG(R.string.glass_strong, 0.22f)
+}
+
+enum class BackdropStyle(@StringRes val label: Int) {
+    BLURRED(R.string.backdrop_blurred), SHARP(R.string.backdrop_sharp), COLOR(R.string.backdrop_color)
+}
 
 inline fun <reified T : Enum<T>> T.next(): T {
     val values = enumValues<T>()

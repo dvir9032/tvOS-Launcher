@@ -36,7 +36,7 @@ Your apps on a translucent shelf at the bottom of the screen, using each app's o
 The background takes on the colors of whichever app you're on and fades smoothly as you move. The focused tile lifts, grows and catches the light.
 
 **✋ Arrange it your way**
-Hold OK on any app to open, move or hide it. Your layout is remembered.
+Hold OK on any app for a menu right above it: open, move, move to start, hide, app info or uninstall. Your layout is remembered.
 
 | Long-press menu | Moving an app |
 |---|---|
@@ -96,8 +96,8 @@ Press **Home** on your remote. If your TV asks which home screen to use, pick **
 No computer needed:
 
 1. Open **Shelf** from your TV's app list.
-2. Select the orange **Set up Home button** pill at the top (currently labeled in Hebrew: *הגדר כפתור בית*).
-3. Turn on **Shelf – כפתור הבית** in the list that opens.
+2. Select the orange **Set up Home button** pill at the top.
+3. Turn on **Shelf – Home button** in the list that opens.
 
 From now on, Home takes you straight to Shelf. The orange pill disappears once it's set up.
 
@@ -136,10 +136,10 @@ Every version is built automatically from the code you see here, then installed 
 It only notices when your TV's built-in launcher comes to the front and opens Shelf instead. It doesn't read anything on your screen.
 
 **Can I go back to my old home screen?**
-Anytime. Turn off *Shelf – כפתור הבית* in Accessibility settings, or uninstall Shelf. Nothing on your TV is changed permanently.
+Anytime. Turn off *Shelf – Home button* in Accessibility settings, or uninstall Shelf. Nothing on your TV is changed permanently.
 
 **Does it work on my TV?**
-Shelf runs on Android TV 8.0 and newer. Every version is tested on an Android TV 10 emulator, and it runs on a Sony Bravia. The menus are in Hebrew for now.
+Shelf runs on Android TV 8.0 and newer. Every version is tested on an Android TV 10 emulator, and it runs on a Sony Bravia. Menus are in English, or in Hebrew when your TV is set to Hebrew.
 
 **How do I update?**
 Shelf tells you when there's a new version. You can also reinstall from the same Downloader code anytime; your layout and settings stay.

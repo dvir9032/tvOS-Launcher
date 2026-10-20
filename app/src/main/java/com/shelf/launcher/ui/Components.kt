@@ -47,6 +47,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -237,7 +238,7 @@ fun GlassIconButton(
 fun SettingsGlyph(focused: Boolean) {
     Image(
         painter = painterResource(R.drawable.ic_settings),
-        contentDescription = "הגדרות",
+        contentDescription = stringResource(R.string.settings),
         modifier = Modifier.size(20.dp),
         colorFilter = ColorFilter.tint(if (focused) Ink else Color.White),
     )
@@ -247,9 +248,9 @@ fun SettingsGlyph(focused: Boolean) {
 @Composable
 fun UpdatePill(state: UpdateState, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val text = when (state) {
-        is UpdateState.Available -> "עדכון זמין"
-        is UpdateState.Downloading -> "מוריד ${(state.progress * 100).toInt()}%"
-        UpdateState.Installing -> "מתקין…"
+        is UpdateState.Available -> stringResource(R.string.update_available)
+        is UpdateState.Downloading -> stringResource(R.string.update_downloading, (state.progress * 100).toInt())
+        UpdateState.Installing -> stringResource(R.string.update_installing)
         else -> return
     }
     ActionPill(text = text, onClick = onClick, modifier = modifier)
@@ -481,6 +482,30 @@ fun SourceTile(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = TextStyle(fontFamily = ShelfFont, color = textColor, fontSize = 15.sp, fontWeight = FontWeight.SemiBold),
+        )
+    }
+}
+
+/** Shown at the bottom of the screen while an app is being moved. */
+@Composable
+fun MoveHint(modifier: Modifier = Modifier) {
+    Row(
+        modifier
+            .background(Color.Black.copy(alpha = 0.6f), CircleShape)
+            .border(1.dp, Color.White.copy(alpha = 0.22f), CircleShape)
+            .padding(horizontal = 20.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Image(
+            painter = painterResource(R.drawable.ic_move),
+            contentDescription = null,
+            modifier = Modifier.size(18.dp),
+            colorFilter = ColorFilter.tint(Color.White),
+        )
+        BasicText(
+            text = stringResource(R.string.move_hint),
+            style = TextStyle(fontFamily = ShelfFont, color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Medium),
         )
     }
 }

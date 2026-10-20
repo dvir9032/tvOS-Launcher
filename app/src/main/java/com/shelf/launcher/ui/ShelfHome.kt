@@ -38,6 +38,11 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.stringResource
+import com.shelf.launcher.R
 import com.shelf.launcher.LauncherViewModel
 import com.shelf.launcher.data.SOURCE_PREFIX
 import com.shelf.launcher.data.TvApp
@@ -118,10 +123,25 @@ fun ShelfHome(vm: LauncherViewModel) {
         focusOn(visible.firstOrNull()?.key)
     }
 
-    fun move(dir: MoveDir) {
-        val key = movingKey ?: return
+    /** Puts [key] at position [to] among the visible apps, saves, and keeps focus on it. */
+    fun reorder(key: String, to: Int) {
         val keys = visible.map { it.key }.toMutableList()
         val from = keys.indexOf(key)
+        val target = to.coerceIn(0, keys.lastIndex)
+        if (from < 0 || target == from) return
+        keys.removeAt(from)
+        keys.add(target, key)
+        vm.saveOrder(keys + hiddenApps.map { it.key })
+        val item = lazyIndexOfRow(target / columns)
+        scope.launch {
+            if (listState.layoutInfo.visibleItemsInfo.none { it.index == item }) listState.scrollToItem(item)
+        }
+        focusOn(key)
+    }
+
+    fun move(dir: MoveDir) {
+        val key = movingKey ?: return
+        val from = visible.indexOfFirst { it.key == key }
         if (from < 0) return
         val delta = when (dir) {
             MoveDir.LEFT -> -1
@@ -129,20 +149,14 @@ fun ShelfHome(vm: LauncherViewModel) {
             MoveDir.UP -> -columns
             MoveDir.DOWN -> columns
         }
-        val to = (from + delta).coerceIn(0, keys.lastIndex)
-        if (to == from) return
-        keys.removeAt(from)
-        keys.add(to, key)
-        vm.saveOrder(keys + hiddenApps.map { it.key })
-        val item = lazyIndexOfRow(to / columns)
-        scope.launch {
-            if (listState.layoutInfo.visibleItemsInfo.none { it.index == item }) listState.scrollToItem(item)
-        }
-        focusOn(key)
+        reorder(key, from + delta)
     }
 
+    // Where each tile sits on screen, so its menu can open right above it.
+    val tileBounds = remember { mutableMapOf<String, Rect>() }
+
     // The home screen keeps the tvOS layout (title top-left, apps left to right) even
-    // when the TV is set to a right-to-left language. Menus and settings stay RTL.
+    // when the TV is set to a right-to-left language. Menus and settings follow the TV.
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
     BoxWithConstraints(
         Modifier
@@ -193,7 +207,11 @@ fun ShelfHome(vm: LauncherViewModel) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (homeSetupNeeded) {
-                ActionPill(text = "הגדר כפתור בית", onClick = vm::openHomeSetup, color = Color(0xFFE8862E))
+                ActionPill(
+                    text = stringResource(R.string.setup_home_button),
+                    onClick = vm::openHomeSetup,
+                    color = Color(0xFFE8862E),
+                )
             }
             UpdatePill(state = update, onClick = vm::installUpdate)
             ClockPill(mode = prefs.clock)
@@ -209,7 +227,9 @@ fun ShelfHome(vm: LauncherViewModel) {
                             width = tileW,
                             height = tileH,
                             moving = movingKey == app.key,
-                            modifier = Modifier.focusRequester(requesterFor(app.key)),
+                            modifier = Modifier
+                                .focusRequester(requesterFor(app.key))
+                                .onGloballyPositioned { tileBounds[app.key] = it.boundsInRoot() },
                             onFocused = { focusedKey = app.key },
                             onClick = { if (movingKey == null) vm.launch(app) },
                             onLongClick = { if (movingKey == null) menuFor = app },
@@ -270,29 +290,66 @@ fun ShelfHome(vm: LauncherViewModel) {
                 }
             }
         }
+
+        // While moving an app: a small hint at the bottom.
+        if (movingKey != null) {
+            MoveHint(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = h * 0.035f)
+            )
+        }
     }
     }
 
     menuFor?.let { app ->
-        ActionMenu(
-            app = app,
-            onDismiss = {
-                menuFor = null
-                focusOn(app.key)
-            },
-            onOpen = {
-                menuFor = null
+        fun close() {
+            menuFor = null
+        }
+        val pkg = app.packageName
+        val actions = buildList {
+            add(MenuAction(R.string.menu_open, R.drawable.ic_open) {
+                close()
                 vm.launch(app)
-            },
-            onMove = {
-                menuFor = null
+            })
+            add(MenuAction(R.string.menu_move, R.drawable.ic_move) {
+                close()
                 movingKey = app.key
                 focusOn(app.key)
-            },
-            onHide = {
-                menuFor = null
+            })
+            if (visible.firstOrNull()?.key != app.key) {
+                add(MenuAction(R.string.menu_move_first, R.drawable.ic_first) {
+                    close()
+                    reorder(app.key, 0)
+                })
+            }
+            add(MenuAction(R.string.menu_hide, R.drawable.ic_hide) {
+                close()
                 vm.hide(app.key)
                 focusOn(visible.firstOrNull { it.key != app.key }?.key)
+            })
+            if (pkg != null) {
+                add(MenuAction(R.string.menu_app_info, R.drawable.ic_info) {
+                    close()
+                    focusOn(app.key)
+                    vm.openAppInfo(pkg)
+                })
+            }
+            if (pkg != null && app.canUninstall) {
+                add(MenuAction(R.string.menu_uninstall, R.drawable.ic_delete) {
+                    close()
+                    focusOn(app.key)
+                    vm.uninstall(pkg)
+                })
+            }
+        }
+        ActionMenu(
+            title = app.label,
+            anchor = tileBounds[app.key],
+            actions = actions,
+            onDismiss = {
+                close()
+                focusOn(app.key)
             },
         )
     }
