@@ -57,6 +57,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.shelf.launcher.R
+import androidx.compose.foundation.layout.width
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.fillMaxHeight
 import com.shelf.launcher.data.rememberArt
 import com.shelf.launcher.data.ShelfItem
@@ -687,6 +689,79 @@ fun FolderCollage(apps: List<TvApp>, modifier: Modifier = Modifier) {
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+val SHELF_DOTS_HEIGHT = 44.dp
+
+/**
+ * Top shelf page dots, above the dock (like tvOS). Up from the dock focuses them:
+ * Left / Right switch between the app's items, OK opens the one showing.
+ */
+@Composable
+fun ShelfDots(
+    count: Int,
+    index: Int,
+    appName: String,
+    onFocusChange: (Boolean) -> Unit,
+    onStep: (Int) -> Unit,
+    onOpen: () -> Unit,
+) {
+    var focused by remember { mutableStateOf(false) }
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(SHELF_DOTS_HEIGHT)
+            .onFocusChanged {
+                focused = it.isFocused
+                onFocusChange(it.isFocused)
+            }
+            .onPreviewKeyEvent { event ->
+                val down = event.type == KeyEventType.KeyDown
+                when (event.nativeKeyEvent.keyCode) {
+                    AndroidKeyEvent.KEYCODE_DPAD_LEFT -> { if (down) onStep(-1); true }
+                    AndroidKeyEvent.KEYCODE_DPAD_RIGHT -> { if (down) onStep(1); true }
+                    else -> false
+                }
+            }
+            .tvClickable(onClick = onOpen),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            Modifier
+                .background(if (focused) Color.White else Color.Transparent, CircleShape)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            if (focused) {
+                Image(
+                    painter = painterResource(R.drawable.ic_open),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    colorFilter = ColorFilter.tint(Ink),
+                )
+                BasicText(
+                    text = stringResource(R.string.open_in, appName),
+                    style = TextStyle(fontFamily = ShelfFont, color = Ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold),
+                )
+                Spacer(Modifier.width(4.dp))
+            }
+            repeat(count) { i ->
+                val active = i == index
+                val width by animateDpAsState(if (active) 20.dp else 7.dp, tween(250), label = "dot")
+                Box(
+                    Modifier
+                        .height(7.dp)
+                        .width(width)
+                        .background(
+                            if (focused) Ink.copy(alpha = if (active) 0.9f else 0.3f)
+                            else Color.White.copy(alpha = if (active) 1f else 0.45f),
+                            CircleShape,
+                        )
+                )
             }
         }
     }

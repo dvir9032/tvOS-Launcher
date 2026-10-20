@@ -17,6 +17,7 @@
     <string name="menu_hide">הסתר</string>
     <string name="menu_app_info">פרטי אפליקציה</string>
     <string name="menu_uninstall">הסר התקנה</string>
+    <string name="open_in">פתח ב־%1$s</string>
     <string name="move_hint">חיצים להזזה · OK לסיום</string>
 
     <!-- Settings pages -->

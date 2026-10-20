@@ -65,6 +65,9 @@ import com.shelf.launcher.data.folderName
 import com.shelf.launcher.data.next
 import com.shelf.launcher.home.TvPower
 import java.util.Calendar
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.ui.graphics.graphicsLayer
 import com.shelf.launcher.LauncherViewModel
 import com.shelf.launcher.data.SOURCE_PREFIX
 import com.shelf.launcher.data.TvApp
@@ -143,19 +146,20 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
     // Top shelf: content from the last focused app (shows, episodes, videos it put on
     // the TV home screen). The big picture rotates until a content card is focused.
     var ownerKey by rememberSaveable { mutableStateOf<String?>(null) }
-    var focusedItemId by remember { mutableStateOf<Long?>(null) }
+    var shelfFocused by remember { mutableStateOf(false) }
+    // 0 = the dock or above it; 1 = the rows below the dock (they fade in only then)
+    var focusZone by remember { mutableIntStateOf(0) }
     val owner = visible.firstOrNull { it.key == ownerKey } ?: allApps.firstOrNull { it.key == ownerKey } ?: visible.firstOrNull()
     val shelfItems = if (prefs.showContent) owner?.packageName?.let { content[it] }.orEmpty() else emptyList()
     var heroIndex by remember(owner?.key) { mutableIntStateOf(0) }
-    LaunchedEffect(owner?.key, shelfItems.size, focusedItemId) {
-        if (shelfItems.size < 2 || focusedItemId != null) return@LaunchedEffect
+    LaunchedEffect(owner?.key, shelfItems.size, shelfFocused) {
+        if (shelfItems.size < 2 || shelfFocused) return@LaunchedEffect
         while (true) {
             delay(8_000)
             heroIndex = (heroIndex + 1) % shelfItems.size
         }
     }
-    val heroItem = if (focusedSource != null) null else
-        shelfItems.firstOrNull { it.id == focusedItemId } ?: shelfItems.getOrNull(heroIndex % shelfItems.size.coerceAtLeast(1))
+    val heroItem = if (focusedSource != null) null else shelfItems.getOrNull(heroIndex % shelfItems.size.coerceAtLeast(1))
 
     var menuFor by remember { mutableStateOf<TvApp?>(null) }
     var menuFromRecent by remember { mutableStateOf(false) }
@@ -345,7 +349,7 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
             )
         }
 
-        val appRow: @Composable (List<TvApp>) -> Unit = { row ->
+        val appRow: @Composable (List<TvApp>, Boolean) -> Unit = { row, below ->
             Row(horizontalArrangement = Arrangement.spacedBy(gap)) {
                 row.forEach { app ->
                     key(app.key) {
@@ -360,7 +364,7 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
                             onFocused = {
                                 focusedKey = app.key
                                 ownerKey = app.key
-                                focusedItemId = null
+                                focusZone = if (below) 1 else 0
                             },
                             onClick = {
                                 if (movingKey == null) {
@@ -385,10 +389,8 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
         }
 
         val spacing = h * 0.035f
-        val cardH = tileH * 0.9f
-        val cardW = cardH * 16f / 9f
-        val maxCards = ((w - (sidePad + trayPadH) * 2 + gap) / (cardW + gap)).toInt().coerceAtLeast(1)
-        val shelfRowHeight = if (shelfItems.isNotEmpty()) cardH else 0.dp
+        val shelfRowHeight = if (shelfItems.isNotEmpty()) SHELF_DOTS_HEIGHT else 0.dp
+        val belowAlpha by animateFloatAsState(if (focusZone == 1) 1f else 0f, tween(300), label = "belowDock")
 
         // On TVs Compose scrolls the focused row to ~30% of the screen by default,
         // which pulls the dock up. Only scroll when a row is actually cut off.
@@ -402,25 +404,20 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
             ) {
                 item(key = "shelf") {
                     if (shelfItems.isNotEmpty()) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = sidePad + trayPadH),
-                            horizontalArrangement = Arrangement.spacedBy(gap),
-                        ) {
-                            shelfItems.take(maxCards).forEach { item ->
-                                key(item.id) {
-                                    ContentCard(
-                                        item = item,
-                                        width = cardW,
-                                        height = cardH,
-                                        onFocused = {
-                                            focusedKey = "item:${item.id}"
-                                            focusedItemId = item.id
-                                        },
-                                        onClick = { vm.launchItem(item) },
-                                    )
+                        ShelfDots(
+                            count = shelfItems.size,
+                            index = heroIndex % shelfItems.size,
+                            appName = owner?.label.orEmpty(),
+                            onFocusChange = { focused ->
+                                shelfFocused = focused
+                                if (focused) {
+                                    focusedKey = "shelf"
+                                    focusZone = 0
                                 }
-                            }
-                        }
+                            },
+                            onStep = { step -> heroIndex = (heroIndex + step).mod(shelfItems.size) },
+                            onOpen = { heroItem?.let(vm::launchItem) },
+                        )
                     } else {
                         Box(Modifier.height(0.dp))
                     }
@@ -432,13 +429,15 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
                             padH = trayPadH,
                             padV = trayPadV,
                             glassAlpha = prefs.glass.alpha,
-                        ) { appRow(first) }
+                        ) { appRow(first, false) }
                     }
                 }
                 if (shownSources.isNotEmpty()) {
                     item(key = "sources") {
                         Row(
-                            modifier = Modifier.padding(horizontal = sidePad + trayPadH),
+                            modifier = Modifier
+                                .padding(horizontal = sidePad + trayPadH)
+                                .graphicsLayer { alpha = belowAlpha },
                             horizontalArrangement = Arrangement.spacedBy(gap),
                         ) {
                             shownSources.forEach { source ->
@@ -451,7 +450,7 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
                                         modifier = Modifier.focusRequester(requesterFor(sourceKey)),
                                         onFocused = {
                                             focusedKey = sourceKey
-                                            focusedItemId = null
+                                            focusZone = 1
                                         },
                                         onClick = { vm.launchSource(source) },
                                     )
@@ -461,12 +460,18 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
                     }
                 }
                 itemsIndexed(rows.drop(1), key = { index, _ -> "row_$index" }) { _, row ->
-                    Box(Modifier.padding(horizontal = sidePad + trayPadH)) { appRow(row) }
+                    Box(
+                        Modifier
+                            .padding(horizontal = sidePad + trayPadH)
+                            .graphicsLayer { alpha = belowAlpha }
+                    ) { appRow(row, true) }
                 }
                 if (recentApps.isNotEmpty()) {
                     item(key = "recent") {
                         Column(
-                            modifier = Modifier.padding(horizontal = sidePad + trayPadH),
+                            modifier = Modifier
+                                .padding(horizontal = sidePad + trayPadH)
+                                .graphicsLayer { alpha = belowAlpha },
                             verticalArrangement = Arrangement.spacedBy(10.dp),
                         ) {
                             BasicText(
@@ -493,7 +498,7 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
                                             onFocused = {
                                                 focusedKey = app.key
                                                 ownerKey = app.key
-                                                focusedItemId = null
+                                                focusZone = 1
                                             },
                                             onClick = { vm.launch(app) },
                                             onLongClick = {

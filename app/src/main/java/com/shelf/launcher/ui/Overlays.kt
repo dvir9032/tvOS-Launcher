@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
@@ -475,7 +476,7 @@ fun FolderPanel(
     Dialog(onDismissRequest = onDismiss, properties = Full) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             AnimatedVisibility(visibleState = appear, enter = fadeIn(tween(160)) + scaleIn(tween(220), initialScale = 0.94f)) {
-                GlassPanel(Modifier.width(760.dp), frost = frost, shape = RoundedCornerShape(36.dp)) {
+                GlassPanel(Modifier.widthIn(min = 320.dp), frost = frost, shape = RoundedCornerShape(36.dp)) {
                     Column(Modifier.padding(horizontal = 28.dp, vertical = 22.dp)) {
                         BasicText(
                             folder.label,
