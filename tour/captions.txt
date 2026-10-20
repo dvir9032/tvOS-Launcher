@@ -1,0 +1,25 @@
+01|Shelf: a tvOS-inspired home screen for Android TV
+02|The backdrop follows the app in focus
+03|The backdrop follows the app in focus
+04|Apps sit in a frosted glass dock
+05|Apps sit in a frosted glass dock
+06|Leave the remote alone and everything else dims
+07|More apps fade in below the dock
+08|More apps fade in below the dock
+09|Hold OK for options
+10|Move apps anywhere
+11|Move apps anywhere
+12|Top shelf: what's new inside the app
+13|Open it straight from the home screen
+14|Open it straight from the home screen
+15|Open it straight from the home screen
+16|Control Center
+17|Control Center: sound, theme, sleep timer, picture
+18|Light theme, or automatic at night
+19|Light theme, or automatic at night
+20|Settings in the tvOS style
+21|Make it yours: theme, sounds, clock, glass
+22|Group apps into folders
+23|Group apps into folders
+24|Group apps into folders
+25|Free and open source: github.com/dvir9032/tvOS-Launcher
