@@ -113,8 +113,8 @@ fun MenuRow(
     value: String? = null,
     @DrawableRes icon: Int? = null,
     chevron: Boolean = false,
-    height: Dp = 48.dp,
-    fontSize: TextUnit = 17.sp,
+    height: Dp = 40.dp,
+    fontSize: TextUnit = 15.sp,
     idleFill: Color = Color.Transparent,
     onClick: () -> Unit,
 ) {
@@ -133,9 +133,9 @@ fun MenuRow(
             .onFocusChanged { focused = it.isFocused }
             .tvClickable(onClick = onClick)
             .background(if (focused) Color.White else idleFill, shape)
-            .padding(horizontal = 18.dp),
+            .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         BasicText(
             text = text,
@@ -155,7 +155,7 @@ fun MenuRow(
             Image(
                 painter = painterResource(icon),
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(17.dp),
                 colorFilter = ColorFilter.tint(color),
             )
         }
@@ -163,7 +163,7 @@ fun MenuRow(
             Image(
                 painter = painterResource(R.drawable.ic_chevron),
                 contentDescription = null,
-                modifier = Modifier.size(22.dp),
+                modifier = Modifier.size(20.dp),
                 colorFilter = ColorFilter.tint(color.copy(alpha = 0.5f)),
             )
         }
@@ -215,17 +215,17 @@ fun ActionMenu(
                     enter = fadeIn(tween(150)) +
                         scaleIn(tween(200), initialScale = 0.9f, transformOrigin = TransformOrigin(0.5f, 1f)),
                 ) {
-                    GlassPanel(Modifier.width(320.dp), frost = frost) {
-                        Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    GlassPanel(Modifier.width(264.dp), frost = frost, shape = RoundedCornerShape(22.dp)) {
+                        Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             BasicText(
                                 text = title,
-                                modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 4.dp, bottom = 6.dp),
+                                modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 2.dp, bottom = 4.dp),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 style = TextStyle(
                                     fontFamily = ShelfFont,
                                     color = Color.White.copy(alpha = 0.6f),
-                                    fontSize = 14.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.SemiBold,
                                 ),
                             )
