@@ -4,7 +4,7 @@
 
     <!-- Home button service -->
     <string name="home_service_label">Shelf – Home button</string>
-    <string name="home_service_description">Opens Shelf whenever the TV\'s built-in launcher comes up, so the Home button on your remote takes you to Shelf. It only checks which app is in front and doesn\'t read anything on your screen.</string>
+    <string name="home_service_description">Makes the Home button on your remote open Shelf right away. It only reacts to the Home button and checks which app is in front; it doesn\'t read anything on your screen or anything you type.</string>
 
     <!-- Top bar -->
     <string name="setup_home_button">Set up Home button</string>

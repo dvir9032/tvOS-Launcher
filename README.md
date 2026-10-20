@@ -161,7 +161,7 @@ Shelf runs on Android TV 8.0 and newer. Every version is tested on an Android TV
 **What does Shelf ask permission for?**
 Each one is optional and asked only when needed:
 - *TV listings*: to show content from your apps in the top shelf.
-- *Shelf – Home button* (accessibility): so the Home button opens Shelf, and to open the TV's power menu.
+- *Shelf – Home button* (accessibility): so the Home button opens Shelf (it reacts only to the Home button and never reads the screen), and to open the TV's power menu.
 - *Lock the screen* (device admin): only for "Screen off" and the sleep timer.
 
 **How do I update?**

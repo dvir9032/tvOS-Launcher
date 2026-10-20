@@ -2,7 +2,7 @@
 <resources>
     <!-- Home button service -->
     <string name="home_service_label">Shelf – כפתור הבית</string>
-    <string name="home_service_description">פותח את Shelf בכל פעם שהלאנצ\'ר המובנה של הטלוויזיה עולה, כך שכפתור הבית בשלט מוביל ל־Shelf. השירות רק בודק איזו אפליקציה פתוחה, ולא קורא את התוכן שעל המסך.</string>
+    <string name="home_service_description">כפתור הבית בשלט פותח את Shelf מיד. השירות מגיב רק לכפתור הבית ובודק איזו אפליקציה פתוחה. הוא לא קורא את מה שעל המסך ולא את מה שמקלידים.</string>
 
     <!-- Top bar -->
     <string name="setup_home_button">הגדר כפתור בית</string>

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.SystemClock
 import android.provider.Settings
+import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import com.shelf.launcher.MainActivity
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,12 +61,36 @@ class HomeButtonService : AccessibilityService() {
         lastLaunch = now
 
         // Same intent the Home button sends, so Shelf also jumps back to the first app.
-        val home = Intent(Intent.ACTION_MAIN)
-            .addCategory(Intent.CATEGORY_HOME)
-            .setClass(this, MainActivity::class.java)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        runCatching { startActivity(home) }
+        openShelf()
     }
+
+    /**
+     * Takes the Home button itself when Shelf isn't the TV's home screen.
+     *
+     * If the TV handled it, Android would open the built-in launcher first and
+     * then, for about 5 seconds, hold back every app start that isn't from that
+     * launcher: Shelf would show up late and apps picked in that time wouldn't
+     * open. Taking the key means none of that happens; Shelf just comes forward.
+     */
+    override fun onKeyEvent(event: KeyEvent): Boolean {
+        if (event.keyCode != KeyEvent.KEYCODE_HOME) return false
+        if (isDefaultHome(this)) return false
+        if (event.action == KeyEvent.ACTION_UP && !event.isCanceled) {
+            lastLaunch = SystemClock.elapsedRealtime()
+            quietUntil = 0L
+            if (!openShelf()) performGlobalAction(GLOBAL_ACTION_HOME) // fallback: the TV's own Home
+        }
+        return true
+    }
+
+    private fun openShelf(): Boolean = runCatching {
+        startActivity(
+            Intent(Intent.ACTION_MAIN)
+                .addCategory(Intent.CATEGORY_HOME)
+                .setClass(this, MainActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
+    }.isSuccess
 
     override fun onInterrupt() = Unit
 
