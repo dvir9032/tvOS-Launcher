@@ -61,6 +61,26 @@ fi
 echo "7b-app-still-open :: $(resumed)" | tee -a "$LOG"
 press KEYCODE_HOME;        sleep 4; shot 8-back-home
 
+# --- Diagnostic: open an app right after Home (Android holds app starts ~5 s after Home) ---
+echo "--- quick open after Home" | tee -a "$LOG"
+press KEYCODE_HOME; sleep 4                      # leave Shelf settled first
+adb logcat -c || true
+t0=$(date +%s%N)
+press KEYCODE_HOME
+for i in $(seq 1 40); do resumed | grep -q "$PKG" && break; sleep 0.25; done
+t1=$(date +%s%N)
+echo "home -> Shelf in front: $(( (t1 - t0) / 1000000 )) ms" | tee -a "$LOG"
+press KEYCODE_DPAD_CENTER
+opened=no
+for i in $(seq 1 40); do
+  if ! resumed | grep -q "$PKG"; then opened=yes; break; fi
+  sleep 0.25
+done
+t2=$(date +%s%N)
+echo "OK -> app in front: $opened after $(( (t2 - t1) / 1000000 )) ms :: $(resumed)" | tee -a "$LOG"
+adb logcat -d | grep -iE "stopped|app switch|Background activity start|Abort background" | tail -10 | tee -a "$LOG"
+press KEYCODE_HOME; sleep 6
+
 # --- 2.0 features ---
 # Long-press OK on the first app: the menu (Open / Move / Hide) should appear.
 adb shell input keyevent --longpress KEYCODE_DPAD_CENTER; shot 09-menu
