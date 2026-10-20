@@ -154,6 +154,7 @@ press KEYCODE_BACK;        sleep 2
 
 # --- Recent row (an app was opened earlier) ---
 press KEYCODE_DPAD_DOWN;   sleep 2; shot 22-recent
+press KEYCODE_DPAD_UP;     sleep 2; shot 23-dock-back-in-place   # the dock must be back at its usual height
 press KEYCODE_BACK;        sleep 2
 
 adb logcat -d > "$OUT/full-log.txt" || true

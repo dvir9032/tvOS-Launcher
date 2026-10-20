@@ -399,6 +399,13 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
         // Always the same height, so the list never re-anchors when the dots come and go.
         val shelfRowHeight = SHELF_DOTS_HEIGHT
         val belowAlpha by animateFloatAsState(if (focusZone == 1) 1f else 0f, tween(300), label = "belowDock")
+        // Back on the dock (or above it): put the dock back in its place. Visiting the
+        // rows below scrolls the list up, and nothing would scroll it down again.
+        LaunchedEffect(focusZone) {
+            if (focusZone == 0 && (listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0)) {
+                listState.animateScrollToItem(0)
+            }
+        }
 
         // On TVs Compose scrolls the focused row to ~30% of the screen by default,
         // which pulls the dock up. Only scroll when a row is actually cut off.
