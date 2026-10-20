@@ -43,6 +43,10 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import com.shelf.launcher.R
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
+import kotlinx.coroutines.delay
 import com.shelf.launcher.LauncherViewModel
 import com.shelf.launcher.data.SOURCE_PREFIX
 import com.shelf.launcher.data.TvApp
@@ -152,6 +156,20 @@ fun ShelfHome(vm: LauncherViewModel) {
         reorder(key, from + delta)
     }
 
+    // The home screen is drawn into a layer, so menus can show a blurred copy of it.
+    val homeLayer = rememberGraphicsLayer()
+    var frost by remember { mutableStateOf<Frost?>(null) }
+    val menuOpen = settingsOpen || menuFor != null
+    LaunchedEffect(menuOpen, prefs, visible, shownSources) {
+        if (!menuOpen) {
+            frost = null
+            return@LaunchedEffect
+        }
+        // After a setting changes the screen behind, let it settle before retaking it.
+        if (frost != null) delay(400)
+        captureFrost(homeLayer)?.let { frost = it }
+    }
+
     // Where each tile sits on screen, so its menu can open right above it.
     val tileBounds = remember { mutableMapOf<String, Rect>() }
 
@@ -161,6 +179,10 @@ fun ShelfHome(vm: LauncherViewModel) {
     BoxWithConstraints(
         Modifier
             .fillMaxSize()
+            .drawWithContent {
+                homeLayer.record { this@drawWithContent.drawContent() }
+                drawLayer(homeLayer)
+            }
             .background(Color.Black)
     ) {
         val w = maxWidth
@@ -347,6 +369,7 @@ fun ShelfHome(vm: LauncherViewModel) {
             title = app.label,
             anchor = tileBounds[app.key],
             actions = actions,
+            frost = frost,
             onDismiss = {
                 close()
                 focusOn(app.key)
@@ -362,7 +385,7 @@ fun ShelfHome(vm: LauncherViewModel) {
             update = update,
             versionName = vm.versionName,
             homeServiceOn = homeServiceOn,
-            tint = backdropApp?.tint ?: Color(0xFF2A3140),
+            frost = frost,
             onHomeSetup = vm::openHomeSetup,
             onChange = vm::updatePrefs,
             onUnhide = vm::unhide,

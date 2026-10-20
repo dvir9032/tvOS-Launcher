@@ -89,20 +89,17 @@ data class MenuAction(@StringRes val label: Int, @DrawableRes val icon: Int, val
 @Composable
 fun GlassPanel(
     modifier: Modifier = Modifier,
+    frost: Frost? = null,
     shape: Shape = RoundedCornerShape(26.dp),
     content: @Composable () -> Unit,
 ) {
     Box(
-        modifier
-            .shadow(28.dp, shape, clip = false)
-            .background(Brush.verticalGradient(listOf(Color(0xF22B303A), Color(0xF21A1E26))), shape)
-            .border(
-                width = 1.dp,
-                brush = Brush.verticalGradient(
-                    listOf(Color.White.copy(alpha = 0.38f), Color.White.copy(alpha = 0.06f))
-                ),
-                shape = shape,
-            )
+        modifier.frostedGlass(
+            frost = frost,
+            shape = shape,
+            fallback = Brush.verticalGradient(listOf(Color(0xF22B303A), Color(0xF21A1E26))),
+            dim = 0.4f,
+        )
     ) {
         content()
     }
@@ -205,6 +202,7 @@ fun ActionMenu(
     title: String,
     anchor: Rect?,
     actions: List<MenuAction>,
+    frost: Frost?,
     onDismiss: () -> Unit,
 ) {
     val first = remember { FocusRequester() }
@@ -217,7 +215,7 @@ fun ActionMenu(
                     enter = fadeIn(tween(150)) +
                         scaleIn(tween(200), initialScale = 0.9f, transformOrigin = TransformOrigin(0.5f, 1f)),
                 ) {
-                    GlassPanel(Modifier.width(320.dp)) {
+                    GlassPanel(Modifier.width(320.dp), frost = frost) {
                         Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             BasicText(
                                 text = title,
@@ -433,8 +431,8 @@ private fun updateAction(state: UpdateState): String = when (state) {
 }
 
 /**
- * Launcher settings as a tvOS-style sidebar: a floating glass panel on the side,
- * tinted with the colors of the screen behind it. Opening a category slides the
+ * Launcher settings as a tvOS-style sidebar: a floating frosted-glass panel on the
+ * side that shows the blurred screen behind it. Opening a category slides the
  * panel to that page; Back goes up a page, then closes.
  */
 @Composable
@@ -445,7 +443,7 @@ fun SettingsPanel(
     update: UpdateState,
     versionName: String,
     homeServiceOn: Boolean,
-    tint: Color,
+    frost: Frost?,
     onHomeSetup: () -> Unit,
     onChange: ((ShelfPrefs) -> ShelfPrefs) -> Unit,
     onUnhide: (String) -> Unit,
@@ -485,22 +483,14 @@ fun SettingsPanel(
                 enter = fadeIn(tween(200)) + slideInHorizontally(tween(300)) { w -> if (rtl) w / 3 else -w / 3 },
             ) {
                 val shape = RoundedCornerShape(30.dp)
-                val top = lerp(tint, Color.Black, 0.35f).copy(alpha = 0.9f)
-                val bottom = lerp(tint, Color.Black, 0.7f).copy(alpha = 0.93f)
+                val top = Color(0xF02C313B)
+                val bottom = Color(0xF31A1D24)
                 Box(
                     Modifier
                         .padding(start = 28.dp, top = 28.dp, bottom = 28.dp)
                         .width(360.dp)
                         .fillMaxHeight()
-                        .shadow(30.dp, shape, clip = false)
-                        .background(Brush.verticalGradient(listOf(top, bottom)), shape)
-                        .border(
-                            width = 1.dp,
-                            brush = Brush.verticalGradient(
-                                listOf(Color.White.copy(alpha = 0.4f), Color.White.copy(alpha = 0.06f))
-                            ),
-                            shape = shape,
-                        )
+                        .frostedGlass(frost = frost, shape = shape, fallback = Brush.verticalGradient(listOf(top, bottom)))
                         .padding(horizontal = 12.dp, vertical = 14.dp)
                 ) {
                     AnimatedContent(
