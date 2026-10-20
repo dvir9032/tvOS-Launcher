@@ -67,7 +67,6 @@ jobs:
           script: |
             bash scripts/tv-smoke-test.sh
             bash scripts/record-demo.sh || true
-            bash scripts/hebrew-screens.sh || true
 
       - name: Make demo GIF
         if: always()
@@ -103,3 +102,54 @@ jobs:
           name: Shelf ${{ github.run_number }}
           make_latest: "true"
           files: ShelfLauncher.apk
+
+  # Screenshots of the menus in Hebrew, on an Android TV 13 emulator (it can set one
+  # app's language without root). Runs alongside the main job and never blocks a release.
+  hebrew:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build APKs
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:assembleDebug :demo-apps:assembleDebug --no-daemon
+          cp app/build/outputs/apk/debug/app-debug.apk ShelfLauncher.apk
+          mkdir -p demo-apks
+          cp demo-apps/build/outputs/apk/*/debug/*.apk demo-apks/
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Hebrew screenshots on Android TV 13
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: android-tv
+          arch: x86
+          profile: tv_1080p
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: bash scripts/hebrew-screens.sh || true
+
+      - name: Publish Hebrew screenshots branch
+        if: always()
+        run: |
+          [ -d screenshots-hebrew ] || exit 0
+          cd screenshots-hebrew
+          git init -q -b test-results-hebrew
+          git add -A
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "Hebrew screenshots for run ${{ github.run_number }}"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" test-results-hebrew

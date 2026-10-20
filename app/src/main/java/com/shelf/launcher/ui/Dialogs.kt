@@ -390,7 +390,7 @@ fun SettingsPanel(
             Box(
                 Modifier
                     .fillMaxSize()
-                    .background(Color(0xED0B0E13))
+                    .background(Brush.linearGradient(listOf(Color(0xFF1A1F29), Color(0xFF0B0E13), Color(0xFF07090D))))
             ) {
                 Row(
                     modifier = Modifier

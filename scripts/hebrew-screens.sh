@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Switches the emulator to Hebrew and takes screenshots of the menus.
-# Best effort: needs a debuggable emulator image, never fails the build.
+# Screenshots of Shelf's menus in Hebrew. Runs on an Android TV 13 emulator,
+# where one app's language can be set without root. Never fails the build.
 set -uo pipefail
 
 PKG=com.shelf.launcher
-OUT=screenshots/hebrew
+OUT=screenshots-hebrew
 mkdir -p "$OUT"
 
 shot() {
@@ -14,24 +14,20 @@ shot() {
 }
 press() { adb shell input keyevent "$1"; }
 
-adb root > /dev/null 2>&1 || true
-sleep 4
-adb wait-for-device
+adb install -r ShelfLauncher.apk && echo "installed Shelf"
+for apk in demo-apks/*.apk; do adb install -r "$apk" > /dev/null && echo "installed $apk"; done
 
-# Change the system language and restart the Android framework so it applies.
-adb shell setprop persist.sys.locale iw-IL || { echo "can't change the language here"; exit 0; }
-adb shell setprop ctl.restart zygote || { echo "can't restart the framework here"; exit 0; }
-sleep 15
-adb wait-for-device
-for i in $(seq 1 60); do
-  adb shell pm path android > /dev/null 2>&1 && break
-  sleep 3
-done
-sleep 30
-echo "locale now: $(adb shell getprop persist.sys.locale)"
+# Shelf in Hebrew (the rest of the TV stays in English).
+adb shell cmd locale set-app-locales "$PKG" --locales he-IL
+echo "Shelf locale: $(adb shell cmd locale get-app-locales "$PKG" 2>&1)"
+
+# Home button service on, like a user would after setup.
+adb shell settings put secure enabled_accessibility_services "$PKG/$PKG.home.HomeButtonService"
+adb shell settings put secure accessibility_enabled 1
+sleep 4
 
 adb shell am start -n "$PKG/.MainActivity" > /dev/null
-sleep 10
+sleep 12
 shot 01-home
 
 press KEYCODE_DPAD_RIGHT; sleep 1
@@ -48,4 +44,7 @@ press KEYCODE_BACK; sleep 1
 press KEYCODE_DPAD_DOWN; sleep 1
 press KEYCODE_DPAD_CENTER; shot 06-home-button
 press KEYCODE_BACK; sleep 1
-press KEYCODE_BACK; shot 07-closed
+press KEYCODE_DPAD_DOWN; sleep 1
+press KEYCODE_DPAD_CENTER; shot 07-updates
+press KEYCODE_BACK; sleep 1
+press KEYCODE_BACK; shot 08-closed
