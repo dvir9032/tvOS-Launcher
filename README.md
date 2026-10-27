@@ -27,12 +27,17 @@ Just your apps, sitting on a glass dock. Move between them and the whole screen 
 
 ![Shelf in motion](docs/demo.gif)
 
+▶️ **[Watch the full one-minute tour](docs/tour.mp4)**: top shelf, Control Center, themes, settings and folders.
+
 ## Features
 
 **🎬 Top shelf: content from your apps**
 Land on YouTube, Netflix or any app that publishes to the Android TV home screen, and its shows and videos fill the screen, with the title and a short description. They rotate on their own; press Up for the page dots, Left / Right to browse, OK to start watching.
 
 ![Top shelf](docs/screenshots/topshelf.png)
+
+**✨ The Apple TV feel**
+A soft tick as you move between apps, tiles that swing gently into focus with a sweep of light, and when you put the remote down, everything but the app you're on quietly dims. The sound can be turned off in Settings.
 
 **🪟 Frosted glass everywhere**
 The dock, menus, Control Center and Settings are frosted glass that shows a blurred view of what's behind them, even on older TVs that can't blur live.
@@ -58,7 +63,7 @@ Hold OK on any app for a menu right above it: open, move, move to start, hide, a
 Group apps into ready-made folders (Games, Movies & TV, Music, Kids, Tools) with no typing, or rename them with the on-screen keyboard.
 
 **🕘 Recent**
-The apps you opened last, in a row that appears when you press Down.
+The apps you opened last, in a row that appears when you press Down. The title fades and the picture dims so the rows below the dock always stay clear.
 
 **⚙️ Settings, tvOS style**
 A floating glass sidebar: theme, apps per row, 12 or 24-hour clock, glass strength, backdrop style, app content, hidden apps and more. In English, or in Hebrew (right to left) when your TV is set to Hebrew.
@@ -102,7 +107,17 @@ No account, no ads, no tracking. Works on Android TV 8.0 and newer, and stays sm
 - **Direct link** (in Downloader or any TV browser):
   `https://github.com/dvir9032/tvOS-Launcher/releases/latest/download/ShelfLauncher.apk`
 - **From the [Releases](../../releases/latest) page**
-- **With ADB:** `adb install -r ShelfLauncher.apk`
+- **From a Mac or PC with ADB** (no Play Protect prompt, and it sets up the Home button for you). Turn on USB debugging on the TV first (see [below](#make-the-home-button-open-shelf)), then:
+
+  ```
+  adb connect <TV-IP>:5555
+  curl -L -o ShelfLauncher.apk https://github.com/dvir9032/tvOS-Launcher/releases/latest/download/ShelfLauncher.apk
+  adb install -r ShelfLauncher.apk
+  adb shell settings put secure enabled_accessibility_services com.shelf.launcher/com.shelf.launcher.home.HomeButtonService
+  adb shell settings put secure accessibility_enabled 1
+  ```
+
+  On a Mac, get `adb` with `brew install --cask android-platform-tools`. Approve *Allow USB debugging?* on the TV the first time.
 
 ## Make the Home button open Shelf
 
@@ -116,7 +131,7 @@ No computer needed:
 2. Select the orange **Set up Home button** pill at the top.
 3. Turn on **Shelf – Home button** in the list that opens.
 
-From now on, Home takes you straight to Shelf. The orange pill disappears once it's set up.
+From now on, Home takes you straight to Shelf, instantly, without the TV's own launcher flashing by first. The orange pill disappears once it's set up.
 
 <details>
 <summary><b>Prefer ADB? Turn off the built-in launcher instead</b></summary>
