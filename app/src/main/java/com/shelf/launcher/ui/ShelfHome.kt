@@ -281,6 +281,7 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
         val tileH: Dp = tileW * 9f / 16f
         val trayTop = h * 0.70f
 
+        val belowAlpha by animateFloatAsState(if (focusZone == 1) 1f else 0f, tween(300), label = "belowDock")
         Backdrop(app = backdropApp, style = prefs.backdrop, modifier = Modifier.fillMaxSize())
         if (heroItem != null) {
             HeroArt(item = heroItem, modifier = Modifier.fillMaxSize())
@@ -300,6 +301,15 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
                 )
         )
 
+        // On the rows below the dock the list scrolls up under the title: the title
+        // fades out and the picture dims, so nothing sits on top of the apps.
+        Box(
+            Modifier
+                .fillMaxSize()
+                .graphicsLayer { alpha = belowAlpha }
+                .background(Color.Black.copy(alpha = 0.55f))
+        )
+
         if (heroItem != null && owner != null) {
             HeroTitle(
                 appName = owner.label,
@@ -307,6 +317,7 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
                 fontSize = w * 0.046f,
                 modifier = Modifier
                     .align(Alignment.TopStart)
+                    .graphicsLayer { alpha = 1f - belowAlpha }
                     .padding(start = w * 0.046f, top = h * 0.06f)
                     .fillMaxWidth(0.52f),
             )
@@ -316,6 +327,7 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
                 fontSize = w * 0.068f,
                 modifier = Modifier
                     .align(Alignment.TopStart)
+                    .graphicsLayer { alpha = 1f - belowAlpha }
                     .padding(start = w * 0.046f, top = h * 0.06f)
                     .fillMaxWidth(0.6f),
             )
@@ -398,7 +410,6 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
         val spacing = h * 0.035f
         // Always the same height, so the list never re-anchors when the dots come and go.
         val shelfRowHeight = SHELF_DOTS_HEIGHT
-        val belowAlpha by animateFloatAsState(if (focusZone == 1) 1f else 0f, tween(300), label = "belowDock")
         // Back on the dock (or above it): put the dock back in its place. Visiting the
         // rows below scrolls the list up, and nothing would scroll it down again.
         LaunchedEffect(focusZone) {
