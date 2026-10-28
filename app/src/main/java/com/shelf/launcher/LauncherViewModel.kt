@@ -8,6 +8,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.provider.Settings
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.shelf.launcher.data.AppRepository
@@ -237,35 +238,35 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
         // Turning the volume while muted starts from the level the sound had before.
         val saved = softMuteVolume()
         val next = ((if (saved >= 0) saved else c.volume) + step).coerceIn(0, c.maxVolume)
-        runCatching {
-            if (systemMuted()) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0)
-            audio.setStreamVolume(AudioManager.STREAM_MUSIC, next, 0)
-        }
+        if (systemMuted()) audioCall("unmute") { audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0) }
+        audioCall("set volume") { audio.setStreamVolume(AudioManager.STREAM_MUSIC, next, 0) }
         setSoftMuteVolume(-1)
         refreshControls()
     }
 
     fun toggleMute() {
         val saved = softMuteVolume()
-        runCatching {
-            when {
-                systemMuted() || saved >= 0 -> {
-                    if (systemMuted()) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0)
-                    if (saved >= 0) audio.setStreamVolume(AudioManager.STREAM_MUSIC, saved, 0)
-                    setSoftMuteVolume(-1)
-                }
-                else -> {
-                    audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0)
-                    // Some TVs (HiSilicon) ignore mute from apps; only their own TV service
-                    // may mute. Then mute by turning the volume to 0 and remember the level.
-                    if (!systemMuted()) {
-                        setSoftMuteVolume(audio.getStreamVolume(AudioManager.STREAM_MUSIC))
-                        audio.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0)
-                    }
-                }
+        if (systemMuted() || saved >= 0) {
+            if (systemMuted()) audioCall("unmute") { audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0) }
+            if (saved >= 0) audioCall("restore volume") { audio.setStreamVolume(AudioManager.STREAM_MUSIC, saved, 0) }
+            setSoftMuteVolume(-1)
+        } else {
+            // HiSilicon TVs throw a SecurityException here (their AudioService broadcasts
+            // to all users with the app's identity), so mute may fail. Then mute by turning
+            // the volume to 0 and remember the level.
+            audioCall("mute") { audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0) }
+            if (!systemMuted()) {
+                val volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC)
+                audioCall("volume to 0") { audio.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0) }
+                if (audio.getStreamVolume(AudioManager.STREAM_MUSIC) == 0) setSoftMuteVolume(volume)
             }
         }
         refreshControls()
+    }
+
+    /** Each audio call on its own: one the TV refuses must not skip the next. */
+    private inline fun audioCall(what: String, call: () -> Unit) {
+        runCatching(call).onFailure { Log.w("ShelfAudio", "$what failed: $it") }
     }
 
     private fun systemMuted() = runCatching { audio.isStreamMute(AudioManager.STREAM_MUSIC) }.getOrDefault(false)
