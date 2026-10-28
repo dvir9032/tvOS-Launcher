@@ -5,6 +5,7 @@ import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.SoundPool
 import android.os.SystemClock
+import android.util.Log
 import android.view.KeyEvent as AndroidKeyEvent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -70,7 +71,9 @@ class FocusFx(private val sound: TickSound?) {
 
     /** Called when something gains focus. */
     fun onFocusMoved() {
-        if (soundOn && movedByRemote()) sound?.play()
+        if (!movedByRemote()) return
+        Log.d("ShelfSound", if (soundOn) "tick" else "tick muted")
+        if (soundOn) sound?.play()
     }
 }
 

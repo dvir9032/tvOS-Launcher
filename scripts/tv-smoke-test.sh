@@ -111,6 +111,17 @@ press KEYCODE_DPAD_CENTER; shot 13b-appearance      # first category
 press KEYCODE_DPAD_CENTER; shot 13c-light-theme     # Theme: Dark → Light
 press KEYCODE_DPAD_CENTER; sleep 1                  # Light → Auto
 press KEYCODE_DPAD_CENTER; sleep 1                  # Auto → Dark, back to normal
+# Navigation sound: turn it off (row 2 of Appearance), move around, it must stay silent.
+press KEYCODE_DPAD_DOWN;   sleep 1
+press KEYCODE_DPAD_CENTER; shot 13c2-sound-off
+adb logcat -c || true
+press KEYCODE_DPAD_UP; sleep 1; press KEYCODE_DPAD_DOWN; sleep 1
+ticks=$(adb logcat -d -s ShelfSound | grep -c "tick$" || true)
+muted=$(adb logcat -d -s ShelfSound | grep -c "tick muted" || true)
+echo "sound off: $ticks ticks played, $muted muted" | tee -a "$LOG"
+if [ "$ticks" -gt 0 ]; then echo "::warning title=Navigation sound::Still playing after turning it off ($ticks ticks)"; fi
+press KEYCODE_DPAD_CENTER; sleep 1                  # back on
+press KEYCODE_DPAD_UP;     sleep 1
 press KEYCODE_BACK;        shot 13d-settings-main
 press KEYCODE_DPAD_DOWN;   sleep 1
 press KEYCODE_DPAD_DOWN;   sleep 1
