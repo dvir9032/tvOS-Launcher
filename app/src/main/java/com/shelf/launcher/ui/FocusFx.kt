@@ -2,6 +2,7 @@ package com.shelf.launcher.ui
 
 import android.content.Context
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.SoundPool
 import android.os.SystemClock
 import android.view.KeyEvent as AndroidKeyEvent
@@ -108,6 +109,7 @@ class TickSound(context: Context) {
         .build()
     private var loaded = false
     private val id: Int
+    private val audio = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
     init {
         val file = File(context.cacheDir, "shelf-tick-v1.wav")
@@ -117,7 +119,12 @@ class TickSound(context: Context) {
     }
 
     fun play() {
-        if (loaded) pool.play(id, 0.32f, 0.32f, 1, 0, 1f)
+        if (!loaded) return
+        // Silent when the TV is muted or turned all the way down.
+        val muted = runCatching {
+            audio.isStreamMute(AudioManager.STREAM_MUSIC) || audio.getStreamVolume(AudioManager.STREAM_MUSIC) == 0
+        }.getOrDefault(false)
+        if (!muted) pool.play(id, 0.32f, 0.32f, 1, 0, 1f)
     }
 
     fun release() = pool.release()

@@ -2,7 +2,9 @@ package com.shelf.launcher.ui
 
 import android.view.KeyEvent as AndroidKeyEvent
 import androidx.compose.foundation.focusable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusRequester
@@ -26,6 +28,10 @@ fun Modifier.tvClickable(onLongClick: (() -> Unit)? = null, onClick: () -> Unit)
     // [0] = OK went down on this element, [1] = long press already fired
     val press = remember { booleanArrayOf(false, false) }
     val fx = LocalFocusFx.current
+    // Android's own "click" on every arrow press would play on top of (or instead of)
+    // Shelf's tick and ignore the Navigation sound setting: Shelf makes its own sound.
+    val view = LocalView.current
+    SideEffect { if (view.isSoundEffectsEnabled) view.isSoundEffectsEnabled = false }
     this
         // Arrows are seen here first (also inside menus and dialogs), so the
         // element that gains focus next knows the remote moved it.
