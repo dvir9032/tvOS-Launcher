@@ -216,7 +216,7 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
         _controls.value = Controls(
             volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC),
             maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC).coerceAtLeast(1),
-            muted = runCatching { audio.isStreamMute(AudioManager.STREAM_MUSIC) }.getOrDefault(false),
+            muted = systemMuted() || softMuteVolume() >= 0,
             network = network(app),
             sleepMinutes = TvPower.sleepMinutesLeft(app),
         )
@@ -234,18 +234,57 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     fun changeVolume(step: Int) {
         val c = _controls.value
-        val next = (c.volume + step).coerceIn(0, c.maxVolume)
+        // Turning the volume while muted starts from the level the sound had before.
+        val saved = softMuteVolume()
+        val next = ((if (saved >= 0) saved else c.volume) + step).coerceIn(0, c.maxVolume)
         runCatching {
-            if (c.muted) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0)
+            if (systemMuted()) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0)
             audio.setStreamVolume(AudioManager.STREAM_MUSIC, next, 0)
         }
+        setSoftMuteVolume(-1)
         refreshControls()
     }
 
     fun toggleMute() {
-        runCatching { audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, 0) }
+        val saved = softMuteVolume()
+        runCatching {
+            when {
+                systemMuted() || saved >= 0 -> {
+                    if (systemMuted()) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0)
+                    if (saved >= 0) audio.setStreamVolume(AudioManager.STREAM_MUSIC, saved, 0)
+                    setSoftMuteVolume(-1)
+                }
+                else -> {
+                    audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0)
+                    // Some TVs (HiSilicon) ignore mute from apps; only their own TV service
+                    // may mute. Then mute by turning the volume to 0 and remember the level.
+                    if (!systemMuted()) {
+                        setSoftMuteVolume(audio.getStreamVolume(AudioManager.STREAM_MUSIC))
+                        audio.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0)
+                    }
+                }
+            }
+        }
         refreshControls()
     }
+
+    private fun systemMuted() = runCatching { audio.isStreamMute(AudioManager.STREAM_MUSIC) }.getOrDefault(false)
+
+    /** Volume before Shelf muted by turning it to 0, or -1. Forgotten once the volume is changed elsewhere. */
+    private fun softMuteVolume(): Int {
+        val saved = shelfPrefs().getInt("softMuteVolume", -1)
+        if (saved >= 0 && audio.getStreamVolume(AudioManager.STREAM_MUSIC) != 0) {
+            setSoftMuteVolume(-1)
+            return -1
+        }
+        return saved
+    }
+
+    private fun setSoftMuteVolume(volume: Int) {
+        shelfPrefs().edit().putInt("softMuteVolume", volume).apply()
+    }
+
+    private fun shelfPrefs() = getApplication<Application>().getSharedPreferences("shelf", Context.MODE_PRIVATE)
 
     /** Next sleep timer choice. Returns false if Shelf isn't allowed to turn the screen off yet. */
     fun cycleSleepTimer(): Boolean {
