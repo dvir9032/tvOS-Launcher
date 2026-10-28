@@ -1,0 +1,52 @@
+Performing Streamed Install
+Success
+--- start directly
+Starting: Intent { cmp=com.shelf.launcher/.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: com.shelf.launcher/.MainActivity
+TotalTime: 2573
+WaitTime: 2583
+Complete
+0-setup-pill ::  mResumedActivity: ActivityRecord{3b60745 u0 com.shelf.launcher/.MainActivity t5}
+--- enable the Home button accessibility service
+1-start ::  mResumedActivity: ActivityRecord{3b60745 u0 com.shelf.launcher/.MainActivity t5}
+2-right ::  mResumedActivity: ActivityRecord{3b60745 u0 com.shelf.launcher/.MainActivity t5}
+3-right-again ::  mResumedActivity: ActivityRecord{3b60745 u0 com.shelf.launcher/.MainActivity t5}
+4-down ::  mResumedActivity: ActivityRecord{3b60745 u0 com.shelf.launcher/.MainActivity t5}
+5-back ::  mResumedActivity: ActivityRecord{3b60745 u0 com.shelf.launcher/.MainActivity t5}
+6-home-button ::  mResumedActivity: ActivityRecord{3b60745 u0 com.shelf.launcher/.MainActivity t5}
+7-opened-app ::  mResumedActivity: ActivityRecord{e076c5a u0 com.google.android.tv.remote.service/.settings.SettingsActivity t6}
+7b-app-still-open ::  mResumedActivity: ActivityRecord{e076c5a u0 com.google.android.tv.remote.service/.settings.SettingsActivity t6}
+8-back-home ::  mResumedActivity: ActivityRecord{7c537ca u0 com.shelf.launcher/.MainActivity t7}
+--- quick open after Home
+home -> Shelf in front: 1138 ms
+OK -> app in front: yes after 435 ms ::  mResumedActivity: ActivityRecord{b9558fd u0 com.google.android.tv.remote.service/.settings.SettingsActivity t8}
+10-28 14:34:07.017  1918  3047 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.google.android.tv.remote.service/.settings.SettingsActivity} from uid 10051
+09-menu ::  mResumedActivity: ActivityRecord{a43844 u0 com.shelf.launcher/.MainActivity t9}
+10-move-mode ::  mResumedActivity: ActivityRecord{5b2d86c u0 com.google.android.tv.remote.service/.settings.SettingsActivity t10}
+11-moved-right ::  mResumedActivity: ActivityRecord{5b2d86c u0 com.google.android.tv.remote.service/.settings.SettingsActivity t10}
+12-move-done ::  mResumedActivity: ActivityRecord{ebd0e30 u0 com.google.android.tv.remote.service/com.google.android.libraries.social.licenses.LicenseMenuActivity t10}
+12b-control-center ::  mResumedActivity: ActivityRecord{4e772b7 u0 com.google.android.tv.remote.service/com.google.android.libraries.social.licenses.LicenseActivity t10}
+13-settings ::  mResumedActivity: ActivityRecord{4e772b7 u0 com.google.android.tv.remote.service/com.google.android.libraries.social.licenses.LicenseActivity t10}
+13b-appearance ::  mResumedActivity: ActivityRecord{4e772b7 u0 com.google.android.tv.remote.service/com.google.android.libraries.social.licenses.LicenseActivity t10}
+13c-light-theme ::  mResumedActivity: ActivityRecord{4e772b7 u0 com.google.android.tv.remote.service/com.google.android.libraries.social.licenses.LicenseActivity t10}
+13c2-sound-off ::  mResumedActivity: ActivityRecord{4e772b7 u0 com.google.android.tv.remote.service/com.google.android.libraries.social.licenses.LicenseActivity t10}
+sound off: 0 ticks played, 0 muted
+13d-settings-main ::  mResumedActivity: ActivityRecord{ebd0e30 u0 com.google.android.tv.remote.service/com.google.android.libraries.social.licenses.LicenseMenuActivity t10}
+13e-home-button-page ::  mResumedActivity: ActivityRecord{3223cb4 u0 com.google.android.tv.remote.service/com.google.android.libraries.social.licenses.LicenseActivity t10}
+14-settings-closed ::  mResumedActivity: ActivityRecord{452b23f u0 com.shelf.launcher/.MainActivity t11}
+14b-cc-light ::  mResumedActivity: ActivityRecord{452b23f u0 com.shelf.launcher/.MainActivity t11}
+14c-home-light ::  mResumedActivity: ActivityRecord{452b23f u0 com.shelf.launcher/.MainActivity t11}
+15b-youtube-shelf ::  mResumedActivity: ActivityRecord{452b23f u0 com.shelf.launcher/.MainActivity t11}
+15-youtube-shelf-idle ::  mResumedActivity: ActivityRecord{452b23f u0 com.shelf.launcher/.MainActivity t11}
+16-content-row ::  mResumedActivity: ActivityRecord{452b23f u0 com.shelf.launcher/.MainActivity t11}
+17-content-next ::  mResumedActivity: ActivityRecord{452b23f u0 com.shelf.launcher/.MainActivity t11}
+18-folder-picker ::  mResumedActivity: ActivityRecord{452b23f u0 com.shelf.launcher/.MainActivity t11}
+19-folder-tile ::  mResumedActivity: ActivityRecord{452b23f u0 com.shelf.launcher/.MainActivity t11}
+20-folder-open ::  mResumedActivity: ActivityRecord{452b23f u0 com.shelf.launcher/.MainActivity t11}
+21-folder-menu ::  mResumedActivity: ActivityRecord{452b23f u0 com.shelf.launcher/.MainActivity t11}
+22-recent ::  mResumedActivity: ActivityRecord{452b23f u0 com.shelf.launcher/.MainActivity t11}
+23-dock-back-in-place ::  mResumedActivity: ActivityRecord{452b23f u0 com.shelf.launcher/.MainActivity t11}
+10-28 14:35:00.352  4622  4655 I ShelfContent: App content: {com.google.android.youtube.tv=10}
+Launcher ran on the TV emulator without crashing.
