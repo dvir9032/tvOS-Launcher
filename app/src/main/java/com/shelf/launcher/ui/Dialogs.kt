@@ -449,6 +449,8 @@ fun SettingsPanel(
     onSystemSettings: () -> Unit,
     contentAllowed: Boolean,
     onAllowContent: () -> Unit,
+    screensaverOn: Boolean,
+    onScreensaver: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     var page by remember { mutableStateOf(SettingsPage.MAIN) }
@@ -513,7 +515,7 @@ fun SettingsPanel(
                                         onOpen = ::open,
                                         onSystemSettings = onSystemSettings,
                                     )
-                                    SettingsPage.APPEARANCE -> AppearancePage(prefs, hasSources, contentAllowed, onAllowContent, onChange)
+                                    SettingsPage.APPEARANCE -> AppearancePage(prefs, hasSources, contentAllowed, onAllowContent, screensaverOn, onScreensaver, onChange)
                                     SettingsPage.APPS -> AppsPage(hiddenApps, onUnhide, onResetOrder)
                                     SettingsPage.HOME -> HomePage(homeServiceOn, onHomeSetup)
                                     SettingsPage.UPDATES -> UpdatesPage(update, versionName, onUpdateClick)
@@ -578,6 +580,8 @@ private fun AppearancePage(
     hasSources: Boolean,
     contentAllowed: Boolean,
     onAllowContent: () -> Unit,
+    screensaverOn: Boolean,
+    onScreensaver: () -> Unit,
     onChange: ((ShelfPrefs) -> ShelfPrefs) -> Unit,
 ) {
     val first = remember { FocusRequester() }
@@ -613,6 +617,15 @@ private fun AppearancePage(
             SidebarRow(stringResource(R.string.backdrop), value = stringResource(prefs.backdrop.label)) {
                 onChange { it.copy(backdrop = it.backdrop.next()) }
             }
+        }
+        item {
+            // Opens the TV's screensaver settings, where "Shelf clock" is picked.
+            SidebarRow(
+                text = stringResource(R.string.screensaver),
+                value = stringResource(if (screensaverOn) R.string.screensaver_clock else R.string.screensaver_choose),
+                chevron = !screensaverOn,
+                onClick = onScreensaver,
+            )
         }
         item {
             SidebarRow(

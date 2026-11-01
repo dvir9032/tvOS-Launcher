@@ -1,5 +1,6 @@
 package com.shelf.launcher
 
+import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +8,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.lifecycle.Lifecycle
+import com.shelf.launcher.data.ArtLoader
 import com.shelf.launcher.data.ContentRepository
 import com.shelf.launcher.home.HomeButtonService
 import com.shelf.launcher.ui.ShelfHome
@@ -40,6 +43,23 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.refresh()
+    }
+
+    /**
+     * While an app is playing, Shelf waits in the background with its artwork in memory. When the TV
+     * runs short (common with 1 GB of RAM), give the pictures back so the app in front isn't killed.
+     * Never while Shelf is on screen: the pictures would blink out.
+     */
+    @Suppress("DEPRECATION")
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) return
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND ||
+            level == ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW ||
+            level == ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
+        ) {
+            ArtLoader.trim()
+        }
     }
 
     override fun onNewIntent(intent: Intent) {

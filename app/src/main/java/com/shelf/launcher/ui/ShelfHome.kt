@@ -131,6 +131,7 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
     val homePresses by vm.homePresses.collectAsState()
     val homeSetupNeeded by vm.homeSetupNeeded.collectAsState()
     val homeServiceOn by vm.homeServiceOn.collectAsState()
+    val screensaverOn by vm.screensaverOn.collectAsState()
     val content by vm.content.collectAsState()
     val contentAllowed by vm.contentAllowed.collectAsState()
     val controls by vm.controls.collectAsState()
@@ -797,6 +798,8 @@ private fun ShelfHomeContent(vm: LauncherViewModel, onAllowContent: () -> Unit) 
             onSystemSettings = vm::openSystemSettings,
             contentAllowed = contentAllowed,
             onAllowContent = onAllowContent,
+            screensaverOn = screensaverOn,
+            onScreensaver = vm::openScreensaverSettings,
             onDismiss = {
                 settingsOpen = false
                 focusOn(focusedKey ?: visible.firstOrNull()?.key)

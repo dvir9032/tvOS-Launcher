@@ -1,0 +1,21 @@
+# Any Android TV or Google TV: the Google extras every brand ships.
+#
+# Apply:   scripts/debloat.sh debloat/android-tv.txt
+# Preview: scripts/debloat.sh --dry-run debloat/android-tv.txt
+# Undo:    scripts/restore.sh
+#
+# Only what Google puts on every TV, so it is safe on any brand; for a Sony use sony-bravia.txt,
+# which includes these. Packages your TV doesn't have are skipped. Nothing is uninstalled.
+# Put a # in front of any line you want to keep.
+
+com.google.android.tvrecommendations           # recommendation rows, only the stock launcher uses them
+com.google.android.tv.bugreportsender
+com.google.android.feedback
+com.google.android.videos                      # Google Play Movies
+com.google.android.play.games
+com.google.android.youtube.tvmusic             # YouTube Music
+
+# Features, not bloat: kept on. Remove the # to turn one off too.
+# com.google.android.backdrop                  # Ambient Mode screensaver; Shelf has its own clock screensaver
+# com.google.android.katniss                   # Google Assistant (the remote's mic button)
+# com.google.android.apps.mediashell           # Chromecast built-in

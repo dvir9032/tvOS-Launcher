@@ -117,4 +117,10 @@
     <string name="needs_home_service">צריך קודם להפעיל את \"Shelf – כפתור הבית\"</string>
     <string name="admin_explain">מאפשר ל־Shelf לכבות את המסך ממרכז הבקרה ועם טיימר השינה. Shelf לא יכול לעשות שום דבר אחר עם ההרשאה הזו.</string>
     <string name="focus_sound">צליל ניווט</string>
+
+    <!-- Screensaver -->
+    <string name="dream_name">השעון של Shelf</string>
+    <string name="screensaver">שומר מסך</string>
+    <string name="screensaver_clock">השעון של Shelf</string>
+    <string name="screensaver_choose">בחירה</string>
 </resources>

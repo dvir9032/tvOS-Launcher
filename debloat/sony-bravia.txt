@@ -1,0 +1,73 @@
+# Sony BRAVIA, Android TV 8 to 10 and Google TV 11 to 14.
+#
+# Apply:   scripts/debloat.sh debloat/sony-bravia.txt
+# Preview: scripts/debloat.sh --dry-run debloat/sony-bravia.txt
+# Undo:    scripts/restore.sh
+#
+# Nothing is uninstalled, only disabled. Packages your model doesn't have are skipped, so this one
+# list covers every BRAVIA generation. Put a # in front of any line you want to keep.
+#
+# Based on the Sony lists tested on real TVs in CleanYourTV (MIT, github.com/Gathin23/cleanyourtv/
+# tree/main/examples), keeping only the entries that showed up on many models.
+#
+# Never in this list, and refused by debloat.sh if you add them: com.sony.dtv.tvx (Live TV and every
+# HDMI input, which Shelf's Inputs button opens), the com.sony.dtv.tvinput.* services, Bravia Sync,
+# the Sony settings apps and com.android.providers.tv (the content in Shelf's top shelf).
+# Also keep com.vewd.core.service: on some models com.sony.dtv.airplayapp crash-loops without it.
+
+# Viewing tracker (ACR: fingerprints what's on screen, HDMI included)
+tv.samba.ssm
+tv.samba.ssm.ui
+
+# Sony and Google ads, promos and content rows
+com.sony.dtv.sonyselect                        # Sony Select promo tile
+com.sony.dtv.sonyselect.overlay
+com.sony.dtv.promos                            # My BRAVIA promos
+com.sony.dtv.discovery                         # Sony Discover content bar
+com.sony.dtv.bivlinfo                          # feeds Discover
+com.sony.dtv.tvlaunchercustomizer              # Sony rows on the stock home screen
+com.google.android.tvrecommendations           # recommendation rows, only the stock launcher uses them
+android.autoinstalls.config.sony.bravia        # installs partner apps through Play
+
+# Retail demo mode
+com.sony.dtv.demomode
+com.sony.dtv.demosupport
+com.sony.dtv.demosystemsupport
+com.sony.dtv.multiscreendemo
+
+# Telemetry, remote support and bug reports
+com.sony.dtv.da.service                        # Sony device agent
+com.qterics.da.product                         # Qterics device agent
+com.sonyericsson.idd.agent                     # usage data
+com.sony.dtv.sonybugreportsys
+com.sony.dtv.sonyloglevelsettingsys
+com.google.android.tv.bugreportsender
+com.google.android.feedback
+com.sony.dtv.b2b.vendorprotocol                # announces model, MAC and IP for Control4-style home
+                                               # automation; keep it if you use one
+
+# Hotel and professional mode, unused at home
+com.sony.dtv.b2b.prosettings
+com.sony.dtv.b2b.hotelmode
+com.sony.dtv.b2b.importexport
+com.sony.dtv.b2b.rs232csupport
+
+# Help and manuals
+com.sony.dtv.customersupport
+com.sony.dtv.imanual
+com.sony.dtv.smarthelp
+
+# Preloaded apps (any you use, keep: put a # in front)
+com.google.android.videos                      # Google Play Movies
+com.google.android.play.games
+com.google.android.youtube.tvmusic             # YouTube Music
+
+# Features, not bloat: kept on. Remove the # to turn one off too.
+# com.google.android.backdrop                  # Ambient Mode screensaver; Shelf has its own clock screensaver
+# com.google.android.katniss                   # Google Assistant (the remote's mic button)
+# com.google.android.apps.mediashell           # Chromecast built-in
+# com.sony.dtv.networkapp.wifidirect           # Screen mirroring
+# com.sonyericsson.dlna                        # DLNA renderer
+# com.sony.huey.dlna.module
+# com.sony.dtv.osat.music                      # plays music from USB
+# com.sony.dtv.smartmediaapp                   # Media Player, plays files from USB

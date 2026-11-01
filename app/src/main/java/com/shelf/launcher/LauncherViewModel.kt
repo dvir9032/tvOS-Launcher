@@ -69,6 +69,10 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     private val _homeServiceOn = MutableStateFlow(false)
     val homeServiceOn: StateFlow<Boolean> = _homeServiceOn.asStateFlow()
 
+    /** True when the TV's screensaver is Shelf's clock. */
+    private val _screensaverOn = MutableStateFlow(false)
+    val screensaverOn: StateFlow<Boolean> = _screensaverOn.asStateFlow()
+
     val versionName: String = BuildConfig.VERSION_NAME
 
     /** Everything Control Center shows. Re-read when it opens. */
@@ -105,6 +109,7 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     fun refresh() {
         checkHomeSetup()
+        _screensaverOn.value = screensaverIsShelf()
 
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
@@ -308,6 +313,15 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     fun powerMenu(): Boolean = TvPower.powerMenu()
 
     fun openPictureSettings() = openSettings(Settings.ACTION_DISPLAY_SETTINGS)
+
+    /** The TV's screensaver settings, where Shelf's clock is picked. */
+    fun openScreensaverSettings() = openSettings(Settings.ACTION_DREAM_SETTINGS)
+
+    private fun screensaverIsShelf(): Boolean = runCatching {
+        val app = getApplication<Application>()
+        val chosen = Settings.Secure.getString(app.contentResolver, "screensaver_components").orEmpty()
+        chosen.split(',').any { android.content.ComponentName.unflattenFromString(it)?.packageName == app.packageName }
+    }.getOrDefault(false)
 
     fun openWifiSettings() = openSettings(Settings.ACTION_WIFI_SETTINGS)
 

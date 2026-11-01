@@ -168,6 +168,14 @@ press KEYCODE_DPAD_DOWN;   sleep 2; shot 22-recent
 press KEYCODE_DPAD_UP;     sleep 2; shot 23-dock-back-in-place   # the dock must be back at its usual height
 press KEYCODE_BACK;        sleep 2
 
+# --- Screensaver: Shelf's clock as the TV's screensaver, started now ---
+adb shell settings put secure screensaver_components "$PKG/.dream.ClockDream"
+adb shell settings put secure screensaver_enabled 1
+adb shell am start -n com.android.systemui/.Somnambulator > /dev/null 2>&1 || true
+sleep 4; shot 24-screensaver        # the time and date over a soft glow
+press KEYCODE_DPAD_CENTER; sleep 2  # any key ends it
+remote_home;               sleep 3
+
 adb logcat -d > "$OUT/full-log.txt" || true
 grep "ShelfContent" "$OUT/full-log.txt" | tail -5 | tee -a "$LOG"
 grep -A40 "FATAL EXCEPTION" "$OUT/full-log.txt" > "$OUT/crash.txt" || true

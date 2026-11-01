@@ -89,6 +89,18 @@
             android:name=".home.SleepReceiver"
             android:exported="false" />
 
+        <!-- Screensaver: a drifting clock, picked in the TV's screensaver settings -->
+        <service
+            android:name=".dream.ClockDream"
+            android:exported="true"
+            android:label="@string/dream_name"
+            android:permission="android.permission.BIND_DREAM_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.dreams.DreamService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+
         <!-- Makes the Home button open Shelf on TVs that don't offer a home screen choice -->
         <service
             android:name=".home.HomeButtonService"
