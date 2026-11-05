@@ -71,25 +71,6 @@ fi
 echo "7b-app-still-open :: $(resumed)" | tee -a "$LOG"
 press KEYCODE_HOME;        sleep 4; shot 8-back-home
 
-# --- Diagnostic: open an app right after Home (Android holds app starts ~5 s after Home) ---
-echo "--- quick open after Home" | tee -a "$LOG"
-press KEYCODE_HOME; sleep 4                      # leave Shelf settled first
-adb logcat -c || true
-t0=$(date +%s%N)
-remote_home
-for i in $(seq 1 40); do resumed | grep -q "$PKG" && break; sleep 0.25; done
-t1=$(date +%s%N)
-echo "home -> Shelf in front: $(( (t1 - t0) / 1000000 )) ms" | tee -a "$LOG"
-press KEYCODE_DPAD_CENTER
-opened=no
-for i in $(seq 1 40); do
-  if ! resumed | grep -q "$PKG"; then opened=yes; break; fi
-  sleep 0.25
-done
-t2=$(date +%s%N)
-echo "OK -> app in front: $opened after $(( (t2 - t1) / 1000000 )) ms :: $(resumed)" | tee -a "$LOG"
-adb logcat -d | grep -iE "ShelfHome|stopped|START u0" | tail -12 | tee -a "$LOG"
-press KEYCODE_HOME; sleep 6
 
 # --- 2.0 features ---
 # Long-press OK on the first app: the menu (Open / Move / Hide) should appear.
@@ -123,11 +104,24 @@ if [ "$ticks" -gt 0 ]; then echo "::warning title=Navigation sound::Still playin
 press KEYCODE_DPAD_CENTER; sleep 1                  # back on
 press KEYCODE_DPAD_UP;     sleep 1
 press KEYCODE_BACK;        shot 13d-settings-main
-press KEYCODE_DPAD_DOWN;   sleep 1
-press KEYCODE_DPAD_DOWN;   sleep 1
+for i in 1 2 3; do press KEYCODE_DPAD_DOWN; sleep 1; done   # Appearance, Language, Apps → Home button
 press KEYCODE_DPAD_CENTER; shot 13e-home-button-page
 press KEYCODE_BACK;        sleep 1
-press KEYCODE_BACK;        shot 14-settings-closed
+
+# --- Language: pick Español in Shelf (the TV stays in English), look, then back ---
+press KEYCODE_DPAD_UP; sleep 1; press KEYCODE_DPAD_UP; sleep 1   # Home button → Apps → Language
+press KEYCODE_DPAD_CENTER; shot 13f-language-page
+for i in 1 2 3 4 5; do press KEYCODE_DPAD_DOWN; sleep 0.5; done  # TV language, English, עברית, العربية, Русский → Español
+press KEYCODE_DPAD_CENTER; sleep 5; shot 13g-home-spanish
+press KEYCODE_DPAD_UP;     sleep 1
+press KEYCODE_DPAD_CENTER; shot 13h-cc-spanish
+press KEYCODE_DPAD_DOWN; sleep 1; press KEYCODE_DPAD_DOWN; sleep 1
+for i in 1 2 3 4 5; do press KEYCODE_DPAD_LEFT; done; sleep 1
+press KEYCODE_DPAD_CENTER; shot 13i-settings-spanish
+press KEYCODE_DPAD_DOWN;   sleep 1                     # Appearance → Language
+press KEYCODE_DPAD_CENTER; sleep 2
+for i in 1 2 3 4 5; do press KEYCODE_DPAD_UP; sleep 0.5; done    # back to "TV language"
+press KEYCODE_DPAD_CENTER; sleep 5; shot 14-settings-closed
 
 # Light theme from Control Center, then back to dark.
 press KEYCODE_DPAD_UP;     sleep 1

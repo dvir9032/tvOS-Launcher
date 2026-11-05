@@ -72,6 +72,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.shelf.launcher.R
 import com.shelf.launcher.data.ClockMode
+import com.shelf.launcher.data.Languages
 import com.shelf.launcher.data.ShelfPrefs
 import com.shelf.launcher.data.TvApp
 import com.shelf.launcher.data.next
@@ -270,6 +271,7 @@ fun ActionMenu(
 enum class SettingsPage(@StringRes val title: Int, @DrawableRes val icon: Int) {
     MAIN(R.string.settings, R.drawable.ic_settings),
     APPEARANCE(R.string.settings_appearance, R.drawable.ic_palette),
+    LANGUAGE(R.string.language, R.drawable.ic_language),
     APPS(R.string.settings_apps, R.drawable.ic_apps),
     HOME(R.string.settings_home_button, R.drawable.ic_home),
     UPDATES(R.string.settings_updates, R.drawable.ic_update),
@@ -510,10 +512,15 @@ fun SettingsPanel(
                                         homeServiceOn = homeServiceOn,
                                         update = update,
                                         versionName = versionName,
+                                        languageName = Languages.nameOf(prefs.language)
+                                            .ifEmpty { stringResource(R.string.language_system) },
                                         onOpen = ::open,
                                         onSystemSettings = onSystemSettings,
                                     )
                                     SettingsPage.APPEARANCE -> AppearancePage(prefs, hasSources, contentAllowed, onAllowContent, onChange)
+                                    SettingsPage.LANGUAGE -> LanguagePage(prefs.language) { tag ->
+                                        onChange { it.copy(language = tag) }
+                                    }
                                     SettingsPage.APPS -> AppsPage(hiddenApps, onUnhide, onResetOrder)
                                     SettingsPage.HOME -> HomePage(homeServiceOn, onHomeSetup)
                                     SettingsPage.UPDATES -> UpdatesPage(update, versionName, onUpdateClick)
@@ -543,6 +550,7 @@ private fun MainPage(
     homeServiceOn: Boolean,
     update: UpdateState,
     versionName: String,
+    languageName: String,
     onOpen: (SettingsPage) -> Unit,
     onSystemSettings: () -> Unit,
 ) {
@@ -551,7 +559,7 @@ private fun MainPage(
     val updateValue = if (update is UpdateState.Available) stringResource(R.string.update_available) else versionName
     SidebarList {
         item { SidebarSection(stringResource(R.string.settings)) }
-        for (target in listOf(SettingsPage.APPEARANCE, SettingsPage.APPS, SettingsPage.HOME, SettingsPage.UPDATES, SettingsPage.ABOUT)) {
+        for (target in listOf(SettingsPage.APPEARANCE, SettingsPage.LANGUAGE, SettingsPage.APPS, SettingsPage.HOME, SettingsPage.UPDATES, SettingsPage.ABOUT)) {
             item(key = target.name) {
                 SidebarRow(
                     text = stringResource(target.title),
@@ -560,6 +568,7 @@ private fun MainPage(
                     value = when (target) {
                         SettingsPage.HOME -> stringResource(if (homeServiceOn) R.string.on else R.string.off)
                         SettingsPage.UPDATES -> updateValue
+                        SettingsPage.LANGUAGE -> languageName
                         else -> null
                     },
                 ) { onOpen(target) }
@@ -693,6 +702,24 @@ private fun UpdatesPage(update: UpdateState, versionName: String, onUpdateClick:
         item { SidebarRow(updateAction(update), first, onClick = onUpdateClick) }
         item { SidebarRow(stringResource(R.string.version), value = versionName) }
         item { HintText(stringResource(R.string.update_explain)) }
+    }
+}
+
+/** Shelf's language: the TV's, or one of the languages Shelf is translated into. */
+@Composable
+private fun LanguagePage(current: String, onPick: (String) -> Unit) {
+    val first = remember { FocusRequester() }
+    LaunchedEffect(Unit) { first.requestWithRetry() }
+    SidebarList {
+        for ((tag, name) in Languages.ALL) {
+            item(key = "lang-$tag") {
+                SidebarRow(
+                    text = name.ifEmpty { stringResource(R.string.language_system) },
+                    focus = if (tag == current) first else null,
+                    value = if (tag == current) "✓" else null,
+                ) { if (tag != current) onPick(tag) }
+            }
+        }
     }
 }
 

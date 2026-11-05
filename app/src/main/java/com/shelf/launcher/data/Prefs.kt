@@ -43,6 +43,8 @@ data class ShelfPrefs(
     val theme: ThemeMode = ThemeMode.DARK,
     /** soft tick when focus moves, like tvOS */
     val focusSound: Boolean = true,
+    /** Shelf's own language tag; empty = the TV's language */
+    val language: String = "",
     /** folder id → app keys inside, in order */
     val folders: Map<String, List<String>> = emptyMap(),
     /** folder id → name the user typed (otherwise the preset name) */
@@ -75,6 +77,7 @@ class Prefs(context: Context) {
         showContent = sp.getBoolean("showContent", true),
         theme = enumOr(sp.getString("theme", null), ThemeMode.DARK),
         focusSound = sp.getBoolean("focusSound", true),
+        language = sp.getString("language", "").orEmpty(),
         folders = readFolders(sp.getString("folders", null)),
         folderNames = readNames(sp.getString("folderNames", null)),
         recent = sp.getString("recent", "").orEmpty().split(',').filter { it.isNotBlank() },
@@ -92,6 +95,7 @@ class Prefs(context: Context) {
             .putBoolean("showContent", p.showContent)
             .putString("theme", p.theme.name)
             .putBoolean("focusSound", p.focusSound)
+            .putString("language", p.language)
             .putString("folders", JSONObject(p.folders.mapValues { JSONArray(it.value) }).toString())
             .putString("folderNames", JSONObject(p.folderNames).toString())
             .putString("recent", p.recent.joinToString(","))

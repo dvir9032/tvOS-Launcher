@@ -7,7 +7,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import com.shelf.launcher.data.ContentRepository
+import com.shelf.launcher.data.Languages
 import com.shelf.launcher.home.HomeButtonService
 import com.shelf.launcher.ui.ShelfHome
 
@@ -20,10 +24,24 @@ class MainActivity : ComponentActivity() {
         viewModel.refresh()
     }
 
+    /** The language this screen was built with; a different choice rebuilds it. */
+    private var appliedLanguage = ""
+
+    override fun attachBaseContext(newBase: Context) {
+        appliedLanguage = Languages.saved(newBase)
+        super.attachBaseContext(Languages.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (HomeButtonService.isStale(intent)) moveTaskToBack(true)
-        setContent { ShelfHome(viewModel, onAllowContent = ::requestContent) }
+        setContent {
+            val prefs by viewModel.prefs.collectAsState()
+            LaunchedEffect(prefs.language) {
+                if (prefs.language != appliedLanguage) recreate()
+            }
+            ShelfHome(viewModel, onAllowContent = ::requestContent)
+        }
 
         // Ask once, on first launch. After that only from Settings → Appearance.
         val prefs = getSharedPreferences("shelf", Context.MODE_PRIVATE)

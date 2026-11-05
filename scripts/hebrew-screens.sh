@@ -45,7 +45,10 @@ press KEYCODE_DPAD_CENTER; shot 04-settings
 press KEYCODE_DPAD_CENTER; shot 05-appearance
 press KEYCODE_BACK; sleep 1
 press KEYCODE_DPAD_DOWN; sleep 1
-press KEYCODE_DPAD_CENTER; shot 06-apps
+press KEYCODE_DPAD_CENTER; shot 06-language
+press KEYCODE_BACK; sleep 1
+press KEYCODE_DPAD_DOWN; sleep 1
+press KEYCODE_DPAD_CENTER; shot 06b-apps
 press KEYCODE_BACK; sleep 1
 press KEYCODE_DPAD_DOWN; sleep 1
 press KEYCODE_DPAD_CENTER; shot 07-home-button
