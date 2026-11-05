@@ -66,11 +66,14 @@ Group apps into ready-made folders (Games, Movies & TV, Music, Kids, Tools) with
 The apps you opened last, in a row that appears when you press Down. The title fades and the picture dims so the rows below the dock always stay clear.
 
 **⚙️ Settings, tvOS style**
-A floating glass sidebar: theme, apps per row, 12 or 24-hour clock, glass strength, backdrop style, app content, hidden apps and more. In English, or in Hebrew (right to left) when your TV is set to Hebrew.
+A floating glass sidebar: theme, language, navigation sound, apps per row, 12 or 24-hour clock, glass strength, backdrop style, app content, hidden apps and more.
 
 | English | עברית |
 |---|---|
 | ![Settings](docs/screenshots/settings.png) | ![Settings in Hebrew](docs/screenshots/settings-hebrew.png) |
+
+**🌍 Speaks your language**
+English, עברית, العربية, Русский, Español, Français, Deutsch, Português, Italiano and Türkçe, with right-to-left layout for Hebrew and Arabic. Shelf follows your TV's language, or pick one just for Shelf in Settings → Language without changing the rest of the TV.
 
 **🔄 Updates itself**
 When a new version is out, an *Update available* button appears in the corner. One click and you're on the latest.
