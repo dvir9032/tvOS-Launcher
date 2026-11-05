@@ -1,0 +1,53 @@
+Performing Streamed Install
+Success
+--- start directly
+Starting: Intent { cmp=com.shelf.launcher/.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: com.shelf.launcher/.MainActivity
+TotalTime: 2307
+WaitTime: 2332
+Complete
+0-setup-pill ::  mResumedActivity: ActivityRecord{5be4c42 u0 com.shelf.launcher/.MainActivity t5}
+--- enable the Home button accessibility service
+1-start ::  mResumedActivity: ActivityRecord{5be4c42 u0 com.shelf.launcher/.MainActivity t5}
+2-right ::  mResumedActivity: ActivityRecord{5be4c42 u0 com.shelf.launcher/.MainActivity t5}
+3-right-again ::  mResumedActivity: ActivityRecord{5be4c42 u0 com.shelf.launcher/.MainActivity t5}
+4-down ::  mResumedActivity: ActivityRecord{5be4c42 u0 com.shelf.launcher/.MainActivity t5}
+5-back ::  mResumedActivity: ActivityRecord{5be4c42 u0 com.shelf.launcher/.MainActivity t5}
+6-home-button ::  mResumedActivity: ActivityRecord{5be4c42 u0 com.shelf.launcher/.MainActivity t5}
+7-opened-app ::  mResumedActivity: ActivityRecord{528fac2 u0 com.google.android.tv.remote.service/.settings.SettingsActivity t6}
+7b-app-still-open ::  mResumedActivity: ActivityRecord{528fac2 u0 com.google.android.tv.remote.service/.settings.SettingsActivity t6}
+8-back-home ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+09-menu ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+10-move-mode ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+11-moved-right ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+12-move-done ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+12b-control-center ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+13-settings ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+13b-appearance ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+13c-light-theme ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+13c2-sound-off ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+sound off: 0 ticks played, 2 muted
+13d-settings-main ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+13e-home-button-page ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+13f-language-page ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+13g-home-spanish ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+13h-cc-spanish ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+13i-settings-spanish ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+14-settings-closed ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+14b-cc-light ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+14c-home-light ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+15b-youtube-shelf ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+15-youtube-shelf-idle ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+16-content-row ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+17-content-next ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+18-folder-picker ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+19-folder-tile ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+20-folder-open ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+21-folder-menu ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+22-recent ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+23-dock-back-in-place ::  mResumedActivity: ActivityRecord{ecc7863 u0 com.shelf.launcher/.MainActivity t7}
+11-05 05:40:37.435  4669  4710 I ShelfContent: App content: {com.google.android.youtube.tv=10}
+11-05 05:41:03.116  4669  4710 I ShelfContent: App content: {com.google.android.youtube.tv=10}
+Launcher ran on the TV emulator without crashing.

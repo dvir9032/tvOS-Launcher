@@ -1,0 +1,1 @@
+Control Center: sound, theme, sleep timer, picture

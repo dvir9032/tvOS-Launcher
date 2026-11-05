@@ -1,0 +1,80 @@
+11-05 05:40:36.947  1759  2314 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: 18a6689 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:40:36.957  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: 18a6689 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:40:36.957  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:40:36.957  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: 18a6689 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:40:36.957  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:40:37.435  4669  4710 I ShelfContent: App content: {com.google.android.youtube.tv=10}
+11-05 05:40:52.767  1759  1779 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:40:52.767  1759  1778 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: 494b465 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:40:52.767  1759  2314 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:40:52.768  1759  1778 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: 494b465 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:40:52.773  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: 494b465 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:40:52.773  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:40:52.773  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:40:52.773  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: 494b465 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:02.700  1759  2474 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:41:02.700  1759  2474 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:41:02.701  1759  1779 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: 5dce5c7 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:02.701  1759  1779 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: 5dce5c7 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:02.707  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: 5dce5c7 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:02.707  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:41:02.707  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:41:02.707  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: 5dce5c7 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:02.734  1759  2474 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:02.735  1759  2474 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:02.735  1759  1779 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: c6029ef com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:02.736  1759  2314 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: c6029ef com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:02.740  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: c6029ef com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:02.740  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:02.740  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:02.740  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: c6029ef com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:03.116  4669  4710 I ShelfContent: App content: {com.google.android.youtube.tv=10}
+11-05 05:41:16.783  1759  2005 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:41:16.783  1759  1778 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:41:16.783  1759  2474 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: 4adc18e com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:16.784  1759  2474 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: 4adc18e com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:16.790  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: 4adc18e com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:16.790  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:41:16.790  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: 4adc18e com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:16.790  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:41:25.736  1759  1778 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:41:25.737  1759  2005 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: 28370f2 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:25.737  1759  1778 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:41:25.737  1759  1778 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: 28370f2 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:25.740  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: 28370f2 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:25.740  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:41:25.740  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: 28370f2 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:41:25.740  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:11.184  1759  2474 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:11.184  1759  2005 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:11.184  1759  2474 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: 46773b0 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:11.185  1759  2474 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: 46773b0 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:11.190  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: 46773b0 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:11.190  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:11.190  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: 46773b0 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:11.190  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:13.800  1759  2005 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:13.800  1759  2005 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:13.800  1759  2005 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: e4f72ba com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:13.801  1759  2005 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: e4f72ba com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:13.807  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: e4f72ba com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:13.807  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:13.807  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: e4f72ba com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:13.807  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:19.365  1759  1779 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:19.365  1759  1779 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:19.366  1759  2474 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: f5ea346 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:19.367  1759  2474 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: f5ea346 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:19.374  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: f5ea346 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:19.374  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:19.374  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:19.374  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: f5ea346 com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:24.027  1759  2474 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:24.028  1759  1779 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: c9a151c com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:24.028  1759  2314 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:24.029  1759  2005 D SurfaceFlinger: onHandleDestroyed, markLayerPendingRemovalLocked: c9a151c com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:24.040  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: c9a151c com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:24.040  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, layerRemoved, make not visible: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:24.040  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: c9a151c com.shelf.launcher/com.shelf.launcher.MainActivity#0
+11-05 05:42:24.040  1759  1759 D SurfaceFlinger: mLayersPendingRemoval, release: com.shelf.launcher/com.shelf.launcher.MainActivity#1
+11-05 05:42:31.570  1921  1964 I PackageManager: Un-granting permission android.permission.REQUEST_INSTALL_PACKAGES from package com.shelf.launcher (protectionLevel=66 flags=0x20c83e44)
